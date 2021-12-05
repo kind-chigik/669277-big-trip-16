@@ -2,11 +2,14 @@ import {renderTemplate, renderPosition} from './render.js';
 import {createMenu} from './view/menu-view.js';
 import {createFilters} from './view/filters-view.js';
 import {createSort} from './view/sort-view.js';
-import {createFormPoint} from './view/form-point-view.js';
+import {createFormPointEdit} from './view/form-point-edit-view.js';
 import {createContent} from './view/content-view.js';
 import {createPoint} from './view/point-view.js';
+import {generatePoint} from './mock/point.js';
 
-const POINT_COUNT = 3;
+const POINT_COUNT = 15;
+
+const points = Array.from({length: POINT_COUNT}, generatePoint);
 
 const navigation = document.querySelector('.trip-controls__navigation');
 const filters = document.querySelector('.trip-controls__filters');
@@ -19,10 +22,10 @@ renderTemplate(tripEvents, createContent(), renderPosition.BEFOREEND);
 
 const content = tripEvents.querySelector('.trip-events__list');
 
-renderTemplate(content, createPoint(), renderPosition.BEFOREEND);
-renderTemplate(content, createFormPoint(), renderPosition.BEFOREEND);
+renderTemplate(content, createPoint(points[0]), renderPosition.BEFOREEND);
+renderTemplate(content, createFormPointEdit(points[0]), renderPosition.BEFOREEND);
 
-for (let i = 0; i < POINT_COUNT; i++) {
-  renderTemplate(content, createPoint(), renderPosition.BEFOREEND);
+for (let i = 1; i < POINT_COUNT; i++) {
+  renderTemplate(content, createPoint(points[i]), renderPosition.BEFOREEND);
 }
 
