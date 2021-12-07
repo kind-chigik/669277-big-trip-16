@@ -3,12 +3,14 @@ import dayjs from 'dayjs';
 const createOffers = (offersPoint) => {
   const fragment = [];
   offersPoint.forEach((offer) => {
-    const {title, cost} = offer;
-    fragment.push(`<li class="event__offer">
-    <span class="event__offer-title">${title}</span>
-    &plus;&euro;&nbsp;
-    <span class="event__offer-price">${cost}</span>
-    </li>`);
+    const {title, cost, checked} = offer;
+    if (checked === true) {
+      fragment.push(`<li class="event__offer">
+      <span class="event__offer-title">${title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${cost}</span>
+      </li>`);
+    }
   });
   return fragment.join('');
 };
@@ -22,7 +24,7 @@ const createPoint = (point) => {
   <div class="event">
     <time class="event__date" datetime="2019-03-18">${dayjs(dateStart).format('D/MM/YY H:mm')}</time>
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
     </div>
     <h3 class="event__title">${type} ${city}</h3>
     <div class="event__schedule">
