@@ -74,7 +74,8 @@ const getRandomOffers = () => {
     for (let i = 0; i < countOffers; i++) {
       const title = getRandomElement(OFFERS);
       const cost = getRandomNumber(10, 100);
-      offers.push({title, cost});
+      const checked = Boolean(getRandomNumber());
+      offers.push({title, cost, checked});
     }
     randomOffres.push({type, offers});
     offers = [];
