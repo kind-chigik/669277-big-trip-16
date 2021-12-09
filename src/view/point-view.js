@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {createElement} from '../render.js';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
@@ -17,7 +18,7 @@ const createOffers = (offersPoint) => {
 
 const durationEvent = (date1, date2) => dayjs(dayjs(date2).diff(dayjs(date1))).format('DD[D] HH[H] mm[M]');
 
-const createPoint = (point) => {
+export const createPoint = (point) => {
   const {dateStart, dateEnd, type, city, price, offers} = point;
 
   return `<li class="trip-events__item">
@@ -55,4 +56,29 @@ const createPoint = (point) => {
 </li>`;
 };
 
-export {createPoint};
+export default class PointView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get template() {
+    return createPoint(this.#point);
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+/* export {PointView as dafault}; */
