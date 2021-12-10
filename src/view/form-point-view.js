@@ -1,4 +1,6 @@
-export const createFormPoint = () => (
+import {createElement} from '../render.js';
+
+const createFormPoint = () => (
   `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -162,3 +164,25 @@ export const createFormPoint = () => (
   </form>
 </li>`
 );
+
+class FormPointView {
+  #element = null;
+
+  get template() {
+    return createFormPoint();
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+export {FormPointView as default};

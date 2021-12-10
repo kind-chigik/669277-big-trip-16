@@ -1,15 +1,14 @@
 import {createElement} from '../render.js';
 
-const createContent = () => (
-  `<ul class="trip-events__list">
-  </ul>`
+const createViewWithoutPoint = () => (
+  '<p class="trip-events__msg">Click New Event to create your first point</p>'
 );
 
-class ContentView {
+class NoPoints {
   #element = null;
 
-  get template () {
-    return createContent();
+  get template() {
+    return createViewWithoutPoint();
   }
 
   get element() {
@@ -25,4 +24,6 @@ class ContentView {
   }
 }
 
-export {ContentView as default};
+export {NoPoints as default};
+
+

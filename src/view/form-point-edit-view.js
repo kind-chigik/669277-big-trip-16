@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {createElement} from '../render.js';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
@@ -133,4 +134,29 @@ const createFormPointEdit = (point) => {
 </li>`;
 };
 
-export {createFormPointEdit};
+class FormPointEditView {
+  #element = null;
+  #point = null
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get template() {
+    return createFormPointEdit(this.#point);
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+export {FormPointEditView as default};
