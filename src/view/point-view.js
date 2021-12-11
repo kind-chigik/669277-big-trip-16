@@ -18,7 +18,7 @@ const createOffers = (offersPoint) => {
 
 const durationEvent = (date1, date2) => dayjs(dayjs(date2).diff(dayjs(date1))).format('DD[D] HH[H] mm[M]');
 
-export const createPoint = (point) => {
+const createPoint = (point) => {
   const {dateStart, dateEnd, type, city, price, offers} = point;
 
   return `<li class="trip-events__item">
@@ -56,7 +56,7 @@ export const createPoint = (point) => {
 </li>`;
 };
 
-export default class PointView {
+class PointView {
   #element = null;
   #point = null;
 
@@ -81,4 +81,4 @@ export default class PointView {
   }
 }
 
-/* export {PointView as dafault}; */
+export {PointView as default};
