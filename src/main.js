@@ -58,14 +58,20 @@ const navigation = document.querySelector('.trip-controls__navigation');
 const filters = document.querySelector('.trip-controls__filters');
 const tripEvents = document.querySelector('.trip-events');
 
-renderElement(navigation, new MenuView().element, renderPosition.BEFOREEND);
-renderElement(filters, new FilterView().element, renderPosition.BEFOREEND);
+const menuInstance = new MenuView();
+const filterInstance = new FilterView();
+const noPointsInstance = new NoPoints();
+const sortInstance = new SortView();
+const contentInstance = new ContentView();
+
+renderElement(navigation, menuInstance.element, renderPosition.BEFOREEND);
+renderElement(filters, filterInstance.element, renderPosition.BEFOREEND);
 
 if (points.length === 0) {
-  renderElement(tripEvents, new NoPoints().element, renderPosition.BEFOREEND);
+  renderElement(tripEvents, noPointsInstance.element, renderPosition.BEFOREEND);
 } else {
-  renderElement(tripEvents, new SortView().element, renderPosition.BEFOREEND);
-  renderElement(tripEvents, new ContentView().element, renderPosition.BEFOREEND);
+  renderElement(tripEvents, sortInstance.element, renderPosition.BEFOREEND);
+  renderElement(tripEvents, contentInstance.element, renderPosition.BEFOREEND);
 
   const content = tripEvents.querySelector('.trip-events__list');
 
