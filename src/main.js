@@ -23,7 +23,7 @@ const renderPoints = (elementPlace, point) => {
 
   const replaceFormToPoint = () => {
     elementPlace.replaceChild(pointComponent.element, pointEditComponent.element);
-  } ;
+  };
 
   const onEscKeyDown = (evt) => {
     if (isKeyEsс) {
@@ -33,25 +33,22 @@ const renderPoints = (elementPlace, point) => {
     }
   };
 
-  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  pointComponent.setListenerClickEdit(() => {
     replacePointToForm();
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  pointEditComponent.setListenerSubmit(() => {
     replaceFormToPoint();
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener(
-    'click', () => {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    }
-  );
+  pointEditComponent.setListenerClickClose(() => {
+    replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
 
-  return renderElement(elementPlace, pointComponent.element, renderPosition.BEFOREEND);
+  return renderElement(elementPlace, pointComponent, renderPosition.BEFOREEND);
 };
 
 const navigation = document.querySelector('.trip-controls__navigation');
@@ -64,14 +61,14 @@ const noPointsInstance = new NoPoints();
 const sortInstance = new SortView();
 const contentInstance = new ContentView();
 
-renderElement(navigation, menuInstance.element, renderPosition.BEFOREEND);
-renderElement(filters, filterInstance.element, renderPosition.BEFOREEND);
+renderElement(navigation, menuInstance, renderPosition.BEFOREEND);
+renderElement(filters, filterInstance, renderPosition.BEFOREEND);
 
 if (points.length === 0) {
-  renderElement(tripEvents, noPointsInstance.element, renderPosition.BEFOREEND);
+  renderElement(tripEvents, noPointsInstance, renderPosition.BEFOREEND);
 } else {
-  renderElement(tripEvents, sortInstance.element, renderPosition.BEFOREEND);
-  renderElement(tripEvents, contentInstance.element, renderPosition.BEFOREEND);
+  renderElement(tripEvents, sortInstance, renderPosition.BEFOREEND);
+  renderElement(tripEvents, contentInstance, renderPosition.BEFOREEND);
 
   const content = tripEvents.querySelector('.trip-events__list');
 

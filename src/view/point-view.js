@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
@@ -56,11 +56,11 @@ const createPoint = (point) => {
 </li>`;
 };
 
-class PointView {
-  #element = null;
+class PointView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
   }
 
@@ -68,16 +68,13 @@ class PointView {
     return createPoint(this.#point);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
+  setListenerClickEdit = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#callActionOnClick);
   }
 
-  removeElement() {
-    this.#element = null;
+  #callActionOnClick = () => {
+    this._callback.click();
   }
 }
 
