@@ -18,8 +18,10 @@ const createOffers = (offersPoint) => {
 
 const durationEvent = (date1, date2) => dayjs(dayjs(date2).diff(dayjs(date1))).format('DD[D] HH[H] mm[M]');
 
+const isFavoritePoint = (value) => value === true ? 'event__favorite-btn--active' : '';
+
 const createPoint = (point) => {
-  const {dateStart, dateEnd, type, city, price, offers} = point;
+  const {dateStart, dateEnd, type, city, price, offers, isFavorite} = point;
 
   return `<li class="trip-events__item">
   <div class="event">
@@ -43,7 +45,7 @@ const createPoint = (point) => {
     <ul class="event__selected-offers">
     ${createOffers(offers)}
     </ul>
-    <button class="event__favorite-btn event__favorite-btn--active" type="button">
+    <button class="event__favorite-btn ${isFavoritePoint(isFavorite)}" type="button">
       <span class="visually-hidden">Add to favorite</span>
       <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
         <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -69,12 +71,21 @@ class PointView extends AbstractView {
   }
 
   setListenerClickEdit = (callback) => {
-    this._callback.click = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#callActionOnClick);
+    this._callback.openFormEdit = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#openFormEdit);
   }
 
-  #callActionOnClick = () => {
-    this._callback.click();
+  setListenerClickFavorite = (callback) => {
+    this._callback.changeFavorite = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#changeFavorite);
+  }
+
+  #changeFavorite = () => {
+    this._callback.changeFavorite();
+  }
+
+  #openFormEdit = () => {
+    this._callback.openFormEdit();
   }
 }
 
