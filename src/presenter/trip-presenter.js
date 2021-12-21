@@ -47,8 +47,8 @@ class TripPresenter {
 
       const content = this.#placeForRender.querySelector('.trip-events__list');
 
-      for (let i = 0; i < this.#points.length; i++) {
-        this.#renderPoint(content, this.#points[i]);
+      for (const point of this.#points) {
+        this.#renderPoint(content, point);
       }
     }
   }
