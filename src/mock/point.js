@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 
 const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 const CITIES = ['Geneva', 'Barcelona', 'Valencia', 'Amsterdam', 'Miami', 'Los Angeles', 'Chicago'];
@@ -95,6 +96,7 @@ const generatePoint = () => {
   });
 
   return {
+    id: nanoid(),
     type,
     city: getRandomElement(CITIES),
     destination: {
