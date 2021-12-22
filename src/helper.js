@@ -17,3 +17,17 @@ export const updateItem = (items, update) => {
   ];
 };
 
+export const removeInstance = (instance) => {
+  if (instance === null) {
+    return;
+  }
+
+  instance.element.remove();
+  instance.removeElement();
+};
+
+export const compareElementByPrice = (element1, element2) => element2.price - element1.price;
+
+export const compareElementByTime = (element1, element2) => element2.durationEvent - element1.durationEvent;
+
+export const compareElementByDate = (element1, element2) => element2.dateStart - element1.dateStart;
