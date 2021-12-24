@@ -26,8 +26,8 @@ export const removeInstance = (instance) => {
   instance.removeElement();
 };
 
-export const compareElementByPrice = (element1, element2) => element2.price - element1.price;
+export const compareElementsByPrice = (element1, element2) => element2.price - element1.price;
 
-export const compareElementByTime = (element1, element2) => element2.durationEvent - element1.durationEvent;
+export const compareElementsByTime = (element1, element2) => element2.durationEvent - element1.durationEvent;
 
-export const compareElementByDate = (element1, element2) => element2.dateStart - element1.dateStart;
+export const compareElementsByDate = (element1, element2) => element1.dateStart - element2.dateStart;
