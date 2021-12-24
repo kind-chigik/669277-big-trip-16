@@ -3,7 +3,7 @@ import AbstractView from './abstract-view.js';
 const createSort = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
   <div class="trip-sort__item  trip-sort__item--day">
-  <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day">
+  <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day" checked>
   <label class="trip-sort__btn" for="sort-day">Day</label>
 </div>
 
@@ -18,7 +18,7 @@ const createSort = () => (
 </div>
 
 <div class="trip-sort__item  trip-sort__item--price">
-  <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price" checked>
+  <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price">
   <label class="trip-sort__btn" for="sort-price">Price</label>
 </div>
 
@@ -32,6 +32,18 @@ const createSort = () => (
 class SortView extends AbstractView {
   get template() {
     return createSort();
+  }
+
+  setListenerClickSort = (callback) => {
+    this._callback.sortPoints = callback;
+    this.element.addEventListener('click', this.#sortPoints);
+  }
+
+  #sortPoints = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+    this._callback.sortPoints(evt.target.id);
   }
 }
 

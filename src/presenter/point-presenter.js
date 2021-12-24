@@ -1,7 +1,7 @@
 import PointView from '../view/point-view.js';
 import FormPointEditView from '../view/form-point-edit-view.js';
 import {renderPosition, renderElement} from '../render.js';
-import {isKeyEsс} from '../helper.js';
+import {isKeyEsс, removeInstance} from '../helper.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -82,6 +82,11 @@ class PointPresentor {
   #changeFavorite = () => {
     this.#point.isFavorite = !this.#point.isFavorite;
     this.#updatePoint(this.#point);
+  }
+
+  destroy = () => {
+    removeInstance(this.#pointInstance);
+    removeInstance(this.#pointEditInstace);
   }
 }
 
