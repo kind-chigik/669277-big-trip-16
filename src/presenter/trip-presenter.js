@@ -3,11 +3,11 @@ import SortView from '../view/sort-view.js';
 import ContentView from '../view/content-view.js';
 import PointPresentor from '../presenter/point-presenter.js';
 import {renderPosition, renderElement} from '../render.js';
-import {updateItem, compareElementByPrice, compareElementByTime, compareElementByDate} from '../helper.js';
+import {updateItem, compareElementsByPrice, compareElementsByTime, compareElementsByDate} from '../helper.js';
 import dayjs from 'dayjs';
 
 const typesSort = {
-  BY_DEFAULT: 'sort-day',
+  BY_DAY: 'sort-day',
   BY_PRICE: 'sort-price',
   BY_TIME: 'sort-time',
 };
@@ -15,7 +15,6 @@ const typesSort = {
 class TripPresenter {
   #placeForRender = null;
   #points = [];
-  #sourcePoints = [];
   #pointsPresenters = new Map();
 
   #noPointsInstance = new NoPoints();
@@ -27,9 +26,8 @@ class TripPresenter {
   }
 
   init = (points) => {
-    this.#sourcePoints = [...points];
     this.#points = [...points];
-    this.#points.sort(compareElementByDate);
+    this.#points.sort(compareElementsByDate);
     this.#renderPoints();
   }
 
@@ -40,16 +38,19 @@ class TripPresenter {
   #sortPoints = (typeSort) => {
     switch (typeSort) {
       case typesSort.BY_PRICE:
-        this.#points.sort(compareElementByPrice);
+        this.#points.sort(compareElementsByPrice);
         break;
       case typesSort.BY_TIME:
         this.#points.forEach((point) => {
           point.durationEvent = dayjs(dayjs(point.dateEnd).diff(dayjs(point.dateStart)));
         });
-        this.#points.sort(compareElementByTime);
+        this.#points.sort(compareElementsByTime);
+        break;
+      case typesSort.BY_DAY:
+        this.#points.sort(compareElementsByDate);
         break;
       default:
-        this.#points.sort(compareElementByDate);
+        throw new Error('Передан некорректный тип сортировки');
     }
     this.#clearPointsList();
     this.#renderPoints();
