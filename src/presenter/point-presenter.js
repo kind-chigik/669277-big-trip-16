@@ -46,6 +46,7 @@ class PointPresentor {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#pointEditInstace.reset(this.#point);
       this.#replaceFormToPoint();
     }
   }
@@ -64,8 +65,9 @@ class PointPresentor {
   }
 
   #onEscKeyDown = (evt) => {
-    if (isKeyEsс) {
+    if (isKeyEsс(evt)) {
       evt.preventDefault();
+      this.#pointEditInstace.reset(this.#point);
       this.#replaceFormToPoint();
       document.removeEventListener('keydown', this.#onEscKeyDown);
     }
@@ -76,6 +78,7 @@ class PointPresentor {
   }
 
   #closeFormEdit = () => {
+    this.#pointEditInstace.reset(this.#point);
     this.#replaceFormToPoint();
   }
 
