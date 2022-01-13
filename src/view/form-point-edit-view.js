@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
@@ -15,12 +15,46 @@ const createOffers = (offersPoint) => {
       </label>
     </div>`);
   });
+
   return fragment.join('');
 };
 
-const createFormPointEdit = (point) => {
-  const {type, city, dateStart, dateEnd, price, offers, destination} = point;
-  const {description} = destination;
+const createPhotos = (photosPoint) => {
+  const fragment = [];
+  photosPoint.forEach((photo) => {
+    fragment.push(`<img class="event__photo" src="${photo}" alt="Event photo">`);
+  });
+
+  return fragment.join('');
+};
+
+const createTypesPoints = (typesPoints, checkedType) => {
+  const fragment = [];
+  typesPoints.forEach((element) => {
+    const {type} = element;
+    fragment.push(`<div class="event__type-item">
+    <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}" ${type === checkedType ? 'checked' : ''}>
+    <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
+  </div>
+    `);
+  });
+
+  return fragment.join('');
+};
+
+const createCities = (destinationForCities) => {
+  const fragment = [];
+  destinationForCities.forEach((element) => {
+    fragment.push(`<option value="${element.city}"></option>`);
+  });
+
+  return fragment.join('');
+};
+
+const createFormPointEdit = (pointWithConditions) => {
+  const {type, city, dateStart, dateEnd, price, offers, destination, destinationForCities, randomOffers} = pointWithConditions;
+  const {description, photos} = destination;
+  const isPointHasDescription = description === '' && photos.length === 0 ? 'visually-hidden' : '';
   const isPointHasOffers = offers.length === 0 ? 'visually-hidden' : '';
 
   return `<li class="trip-events__item">
@@ -36,51 +70,7 @@ const createFormPointEdit = (point) => {
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-
-            <div class="event__type-item">
-              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-              <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-              <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-              <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-              <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-              <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-              <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-              <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-              <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-            </div>
+            ${createTypesPoints(randomOffers, type)}
           </fieldset>
         </div>
       </div>
@@ -91,9 +81,7 @@ const createFormPointEdit = (point) => {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
         <datalist id="destination-list-1">
-          <option value="Amsterdam"></option>
-          <option value="Geneva"></option>
-          <option value="Chamonix"></option>
+          ${createCities(destinationForCities)}
         </datalist>
       </div>
 
@@ -120,30 +108,39 @@ const createFormPointEdit = (point) => {
       </button>
     </header>
     <section class="event__details">
-      <section class="event__section  event__section--offers ${isPointHasOffers}">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-      ${createOffers(offers)}
-      </section>
+    <section class="event__section  event__section--offers ${isPointHasOffers}">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+  ${createOffers(offers)}
+  </section>
 
-      <section class="event__section  event__section--destination">
+      <section class="event__section  event__section--destination ${isPointHasDescription}">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${description}</p>
+
+        <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${createPhotos(photos)}
+        </div>
+      </div>
       </section>
     </section>
   </form>
 </li>`;
 };
 
-class FormPointEditView extends AbstractView {
-  #point = null
+class FormPointEditView extends SmartView {
+  #point = null;
 
   constructor(point) {
     super();
     this.#point = point;
+    this._condiotions = FormPointEditView.parsePointToConditions(point);
+
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createFormPointEdit(this.#point);
+    return createFormPointEdit(this._condiotions);
   }
 
   setListenerSubmit = (callback) => {
@@ -158,11 +155,72 @@ class FormPointEditView extends AbstractView {
 
   #callActionSubmit = (evt) => {
     evt.preventDefault();
-    this._callback.submit();
+    this._callback.submit(FormPointEditView.parseConditionsToPoint(this._condiotions));
   }
 
   #callActionClick = () => {
     this._callback.click();
+  }
+
+  #changeTypePoint = (evt) => {
+    if (evt.target.closest('.event__type-label')) {
+      this.#point.randomOffers.forEach((element) => {
+        if (element.type === evt.target.textContent) {
+          const typePoint = evt.target.textContent;
+          if (typePoint !== this.#point.type) {
+            this.updateData({isTypePointChanged: true, offers: element.offers, type: typePoint});
+          } else {
+            this.updateData({isTypePointChanged: false, offers: element.offers, type: typePoint});
+          }
+        }
+      });
+    }
+  }
+
+  #changeDestinationPoint = (evt) => {
+    this.#point.destinationForCities.forEach((element) => {
+      if (evt.target.value === element.city) {
+        const cityPoint = evt.target.value;
+        const photosAndDescription = {};
+        photosAndDescription.description = element.description;
+        photosAndDescription.photos = element.photos;
+
+        if (cityPoint !== this.#point.city) {
+          this.updateData({isDestinationPointCanged: true, city: cityPoint, destination: photosAndDescription});
+        } else {
+          this.updateData({isDestinationPointCanged: false, city: cityPoint, destination: photosAndDescription});
+        }
+      }
+    });
+  }
+
+  static parsePointToConditions = (point) => ({...point,
+    isTypePointChanged: false,
+    isDestinationPointCanged: false,
+  })
+
+  static parseConditionsToPoint = (conditions) => {
+    const point = {...conditions};
+
+    delete conditions.isTypePointChanged;
+    delete conditions.isDestinationPointCanged;
+
+    return point;
+  }
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-wrapper').addEventListener('click', this.#changeTypePoint);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#changeDestinationPoint);
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setListenerSubmit(this._callback.submit);
+    this.setListenerClickClose(this._callback.click);
+  }
+
+  reset = (points) => {
+    this.updateData(FormPointEditView.parsePointToConditions(points));
   }
 }
 
