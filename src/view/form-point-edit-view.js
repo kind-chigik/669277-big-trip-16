@@ -1,5 +1,6 @@
-import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
@@ -87,10 +88,10 @@ const createFormPointEdit = (pointWithConditions) => {
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateStart).format('YY/MM/D H:mm')}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStart}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateEnd).format('YY/MM/D H:mm')}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEnd}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -130,6 +131,8 @@ const createFormPointEdit = (pointWithConditions) => {
 
 class FormPointEditView extends SmartView {
   #point = null;
+  #datepickerDateStart = null;
+  #datepickerDateEnd = null;
 
   constructor(point) {
     super();
@@ -137,6 +140,7 @@ class FormPointEditView extends SmartView {
     this._condiotions = FormPointEditView.parsePointToConditions(point);
 
     this.#setInnerHandlers();
+    this.#setDatepicker();
   }
 
   get template() {
@@ -186,24 +190,65 @@ class FormPointEditView extends SmartView {
         photosAndDescription.photos = element.photos;
 
         if (cityPoint !== this.#point.city) {
-          this.updateData({isDestinationPointCanged: true, city: cityPoint, destination: photosAndDescription});
+          this.updateData({isDestinationPointChanged: true, city: cityPoint, destination: photosAndDescription});
         } else {
-          this.updateData({isDestinationPointCanged: false, city: cityPoint, destination: photosAndDescription});
+          this.updateData({isDestinationPointChanged: false, city: cityPoint, destination: photosAndDescription});
         }
       }
     });
   }
 
+  #setDatepicker = () => {
+    this.#datepickerDateStart = flatpickr(
+      this.element.querySelector('input[id=event-start-time-1]'),
+      {
+        dateFormat: 'j/m/y h:i',
+        enableTime: true,
+        enableSeconds: true,
+        defaultDate: this._condiotions.dateStart,
+        onChange: this.#changeDatePoint,
+      },
+    );
+    this.#datepickerDateEnd = flatpickr(
+      this.element.querySelector('input[id=event-end-time-1]'),
+      {
+        dateFormat: 'j/m/y h:i',
+        enableTime: true,
+        enableSeconds: true,
+        defaultDate: this._condiotions.dateEnd,
+        onChange: this.#changeDateEndPoint,
+      }
+    );
+  }
+
+  #changeDatePoint = ([userDate]) => {
+    if (String(this.#point.dateStart) !== String(userDate)) {
+      this.updateData({isDatePointChanged: true, dateStart: userDate});
+    } else {
+      this.updateData({isDatePointChanged: false, dateStart: userDate});
+    }
+  }
+
+  #changeDateEndPoint = ([userDate]) => {
+    if (String(this.#point.dateEnd) !== String(userDate)) {
+      this.updateData({isDatePointChanged: true, dateEnd: userDate});
+    } else {
+      this.updateData({isDatePointChanged: false, dateEnd: userDate});
+    }
+  }
+
   static parsePointToConditions = (point) => ({...point,
     isTypePointChanged: false,
-    isDestinationPointCanged: false,
+    isDestinationPointChanged: false,
+    isDatePointChanged: false,
   })
 
   static parseConditionsToPoint = (conditions) => {
     const point = {...conditions};
 
     delete conditions.isTypePointChanged;
-    delete conditions.isDestinationPointCanged;
+    delete conditions.isDestinationPointChanged;
+    delete conditions.isDatePointChanged;
 
     return point;
   }
@@ -217,10 +262,25 @@ class FormPointEditView extends SmartView {
     this.#setInnerHandlers();
     this.setListenerSubmit(this._callback.submit);
     this.setListenerClickClose(this._callback.click);
+    this.#setDatepicker();
   }
 
   reset = (points) => {
     this.updateData(FormPointEditView.parsePointToConditions(points));
+  }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerDateStart) {
+      this.#datepickerDateStart.destroy();
+      this.#datepickerDateStart = null;
+    }
+
+    if (this.#datepickerDateEnd) {
+      this.#datepickerDateEnd.destroy();
+      this.#datepickerDateEnd = null;
+    }
   }
 }
 
