@@ -155,12 +155,6 @@ const generatePoint = () => {
 const generateZeroPoint = () => {
   const type = getRandomElement(TYPES);
   const randomOffers = getRandomOffers();
-  let offers;
-  randomOffers.forEach((element) => {
-    if (element.type === type) {
-      offers = element.offers;
-    }
-  });
 
   const city = getRandomElement(CITIES);
   const destinationForCities = getDestinationForCities();
