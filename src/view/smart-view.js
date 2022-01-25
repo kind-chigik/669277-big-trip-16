@@ -10,12 +10,16 @@ class SmartView extends AbstractView {
     parentElement.replaceChild(newElement, prevElement);
   }
 
-  updateData = (update) => {
+  updateData = (update, justDataUpdating) => {
     if (!update) {
       return;
     }
 
     this._condiotions = {...this._condiotions, ...update};
+
+    if (justDataUpdating) {
+      return;
+    }
 
     this.updateElement();
     this.restoreHandlers();

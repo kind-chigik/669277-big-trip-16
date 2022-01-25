@@ -152,4 +152,36 @@ const generatePoint = () => {
   };
 };
 
-export {generatePoint};
+const generateZeroPoint = () => {
+  const type = getRandomElement(TYPES);
+  const randomOffers = getRandomOffers();
+
+  const city = getRandomElement(CITIES);
+  const destinationForCities = getDestinationForCities();
+  const destination = {};
+  destinationForCities.forEach((element) => {
+    if (element.city === city) {
+      destination.description = element.description;
+      destination.photos = element.photos;
+    }
+  });
+
+  return {
+    id: nanoid(),
+    type,
+    city: '',
+    destination: {
+      description: '',
+      photos: '',
+    },
+    dateStart: '',
+    dateEnd: '',
+    price: '',
+    isFavorite: false,
+    offers: [],
+    randomOffers,
+    destinationForCities,
+  };
+};
+
+export {generatePoint, generateZeroPoint};

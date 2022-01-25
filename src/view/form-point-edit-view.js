@@ -1,15 +1,17 @@
 import SmartView from './smart-view.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import {createTextId} from '../helper.js';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
   offersPoint.forEach((offer) => {
-    const {title, cost} = offer;
+    const {title, cost, checked} = offer;
+    const inputId = createTextId(title);
     fragment.push(`<div class="event__available-offers">
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage">
-      <label class="event__offer-label" for="event-offer-luggage-1">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${inputId}-1" type="checkbox" name="event-offer-${inputId}" value="${title}" ${checked === true ? 'checked' : ''}>
+      <label class="event__offer-label" for="event-offer-${inputId}-1">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${cost}</span>
@@ -21,12 +23,14 @@ const createOffers = (offersPoint) => {
 };
 
 const createPhotos = (photosPoint) => {
-  const fragment = [];
-  photosPoint.forEach((photo) => {
-    fragment.push(`<img class="event__photo" src="${photo}" alt="Event photo">`);
-  });
+  if (photosPoint) {
+    const fragment = [];
+    photosPoint.forEach((photo) => {
+      fragment.push(`<img class="event__photo" src="${photo}" alt="Event photo">`);
+    });
 
-  return fragment.join('');
+    return fragment.join('');
+  }
 };
 
 const createTypesPoints = (typesPoints, checkedType) => {
@@ -57,6 +61,8 @@ const createFormPointEdit = (pointWithConditions) => {
   const {description, photos} = destination;
   const isPointHasDescription = description === '' && photos.length === 0 ? 'visually-hidden' : '';
   const isPointHasOffers = offers.length === 0 ? 'visually-hidden' : '';
+  const isPointNew = city === '';
+  const isSaveDisabled = (city === '') || (dateStart === '') || (dateEnd === '') ? 'disabled' : '';
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -64,7 +70,7 @@ const createFormPointEdit = (pointWithConditions) => {
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${type ? type.toLowerCase() : ''}.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -80,7 +86,7 @@ const createFormPointEdit = (pointWithConditions) => {
         <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city ? city : ''}" list="destination-list-1">
         <datalist id="destination-list-1">
           ${createCities(destinationForCities)}
         </datalist>
@@ -102,8 +108,8 @@ const createFormPointEdit = (pointWithConditions) => {
         <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
       </div>
 
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${isSaveDisabled}>Save</button>
+      <button class="event__reset-btn" type="reset">${isPointNew ? 'Cancel' : 'Delete'}</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
@@ -120,7 +126,7 @@ const createFormPointEdit = (pointWithConditions) => {
 
         <div class="event__photos-container">
         <div class="event__photos-tape">
-          ${createPhotos(photos)}
+        ${createPhotos(photos)}
         </div>
       </div>
       </section>
@@ -153,8 +159,13 @@ class FormPointEditView extends SmartView {
   }
 
   setListenerClickClose = (callback) => {
-    this._callback.click = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#callActionClick);
+    this._callback.clickClose = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#callActionClickClose);
+  }
+
+  setListenerDelete = (callback) => {
+    this._callback.delete = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#callActionDelete);
   }
 
   #callActionSubmit = (evt) => {
@@ -162,8 +173,12 @@ class FormPointEditView extends SmartView {
     this._callback.submit(FormPointEditView.parseConditionsToPoint(this._condiotions));
   }
 
-  #callActionClick = () => {
-    this._callback.click();
+  #callActionClickClose = () => {
+    this._callback.clickClose();
+  }
+
+  #callActionDelete = () => {
+    this._callback.delete(FormPointEditView.parseConditionsToPoint(this._condiotions));
   }
 
   #changeTypePoint = (evt) => {
@@ -198,6 +213,23 @@ class FormPointEditView extends SmartView {
     });
   }
 
+  #changeOffersPoint = (evt) => {
+    this._condiotions.offers.forEach((element) => {
+      if (evt.target.value === element.title) {
+        element.checked = !element.checked;
+      }
+    });
+  }
+
+  #changePricePoint = (evt) => {
+    evt.preventDefault();
+    if (evt.target.value !== this.#point.price) {
+      this.updateData({isPricePointChanged: true, price: evt.target.value}, true);
+    } else {
+      this.updateData({isPricePointChanged: false, price: evt.target.value});
+    }
+  }
+
   #setDatepicker = () => {
     this.#datepickerDateStart = flatpickr(
       this.element.querySelector('input[id=event-start-time-1]'),
@@ -206,7 +238,7 @@ class FormPointEditView extends SmartView {
         enableTime: true,
         enableSeconds: true,
         defaultDate: this._condiotions.dateStart,
-        onChange: this.#changeDatePoint,
+        onChange: this.#changeDateStartPoint,
       },
     );
     this.#datepickerDateEnd = flatpickr(
@@ -221,7 +253,7 @@ class FormPointEditView extends SmartView {
     );
   }
 
-  #changeDatePoint = ([userDate]) => {
+  #changeDateStartPoint = ([userDate]) => {
     if (String(this.#point.dateStart) !== String(userDate)) {
       this.updateData({isDatePointChanged: true, dateStart: userDate});
     } else {
@@ -241,6 +273,7 @@ class FormPointEditView extends SmartView {
     isTypePointChanged: false,
     isDestinationPointChanged: false,
     isDatePointChanged: false,
+    isPricePointChanged: false,
   })
 
   static parseConditionsToPoint = (conditions) => {
@@ -249,6 +282,7 @@ class FormPointEditView extends SmartView {
     delete conditions.isTypePointChanged;
     delete conditions.isDestinationPointChanged;
     delete conditions.isDatePointChanged;
+    delete conditions.isPricePointChanged;
 
     return point;
   }
@@ -256,12 +290,18 @@ class FormPointEditView extends SmartView {
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-wrapper').addEventListener('click', this.#changeTypePoint);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#changeDestinationPoint);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#changePricePoint);
+
+    if (this._condiotions.offers.length !== 0) {
+      this.element.querySelector('.event__available-offers').addEventListener('click', this.#changeOffersPoint);
+    }
   }
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setListenerSubmit(this._callback.submit);
-    this.setListenerClickClose(this._callback.click);
+    this.setListenerClickClose(this._callback.clickClose);
+    this.setListenerDelete(this._callback.delete);
     this.#setDatepicker();
   }
 
