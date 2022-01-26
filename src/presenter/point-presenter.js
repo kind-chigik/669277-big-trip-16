@@ -148,6 +148,9 @@ class PointPresentor {
   }
 
   destroy = () => {
+    if (this.#isNewPoint) {
+      this.#buttonAddNew.disabled = false;
+    }
     removeInstance(this.#pointInstance);
     removeInstance(this.#pointEditInstace);
   }
