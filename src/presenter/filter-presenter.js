@@ -11,8 +11,6 @@ class FilterPresenter {
   constructor(placeForRender, filterModel) {
     this.#placeForRender = placeForRender;
     this.#filterModel = filterModel;
-
-    this.#filterModel.addObserver(this.#modelEvent);
   }
 
   init = () => {
@@ -21,6 +19,8 @@ class FilterPresenter {
 
     this.#filterInstance = new FilterView(filters, this.#filterModel.filter);
     this.#filterInstance.setListenerChangeFilter(this.#changeFilterType);
+
+    this.#filterModel.addObserver(this.#modelEvent);
 
     if (prevFilterInstance === null) {
       renderElement(this.#placeForRender, this.#filterInstance, renderPosition.BEFOREEND);
@@ -35,15 +35,12 @@ class FilterPresenter {
     return [
       {
         type: filterType.EVERYTHING,
-        name: 'Everything',
       },
       {
         type: filterType.FUTURE,
-        name: 'Future',
       },
       {
         type: filterType.PAST,
-        name: 'Past',
       }
     ];
   }
@@ -58,6 +55,15 @@ class FilterPresenter {
 
   #modelEvent = () => {
     this.init();
+  }
+
+  destroy = () => {
+    removeInstance(this.#filterInstance);
+    this.#filterInstance = null;
+
+    this.#filterModel.removeObserver(this.#modelEvent);
+
+    this.#filterModel.setFilter(typesUpdate.MINOR, filterType.EVERYTHING);
   }
 }
 
