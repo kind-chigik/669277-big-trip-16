@@ -56,12 +56,12 @@ const createCities = (destinationForCities) => {
   return fragment.join('');
 };
 
-const createFormPointEdit = (pointWithConditions) => {
+const createFormPointEdit = (pointWithConditions, originCity) => {
   const {type, city, dateStart, dateEnd, price, offers, destination, destinationForCities, randomOffers} = pointWithConditions;
   const {description, photos} = destination;
   const isPointHasDescription = description === '' && photos.length === 0 ? 'visually-hidden' : '';
   const isPointHasOffers = offers.length === 0 ? 'visually-hidden' : '';
-  const isPointNew = city === '';
+  const isPointNew = originCity === '';
   const isSaveDisabled = (city === '') || (dateStart === '') || (dateEnd === '') ? 'disabled' : '';
 
   return `<li class="trip-events__item">
@@ -150,7 +150,7 @@ class FormPointEditView extends SmartView {
   }
 
   get template() {
-    return createFormPointEdit(this._condiotions);
+    return createFormPointEdit(this._condiotions, this.#point.city);
   }
 
   setListenerSubmit = (callback) => {
@@ -305,8 +305,8 @@ class FormPointEditView extends SmartView {
     this.#setDatepicker();
   }
 
-  reset = (points) => {
-    this.updateData(FormPointEditView.parsePointToConditions(points));
+  reset = (point) => {
+    this.updateData(FormPointEditView.parsePointToConditions(point));
   }
 
   removeElement = () => {
