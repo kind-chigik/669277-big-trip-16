@@ -18,6 +18,8 @@ const idForOffers = {
 
 export const isKeyEsс = (evt) => evt.key === KEY_ESCAPE || evt.key === KEY_ESC;
 
+export const durationEvent = (date1, date2) => dayjs(dayjs(date2).diff(dayjs(date1))).format('DD[D] HH[H] mm[M]');
+
 export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
 
