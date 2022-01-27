@@ -1,3 +1,5 @@
+export const reForPrice = /[^0-9]/;
+
 export const typesSort = {
   BY_DAY: 'sort-day',
   BY_TIME: 'sort-time',
