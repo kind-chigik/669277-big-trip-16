@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
-import {durationEvent} from '../helper.js';
+import {getDurationEvent} from '../helper.js';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
@@ -35,7 +35,7 @@ const createPoint = (point) => {
         &mdash;
         <time class="event__end-time" datetime="${dayjs(dateEnd).format('YY-MM-DTH:mm')}">${dayjs(dateEnd).format('H:mm')}</time>
       </p>
-      <p class="event__duration">${durationEvent(dateStart, dateEnd)}</p>
+      <p class="event__duration">${getDurationEvent(dateStart, dateEnd)}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${price}</span>
