@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
+import {getDurationEvent} from '../helper.js';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
@@ -15,8 +16,6 @@ const createOffers = (offersPoint) => {
   });
   return fragment.join('');
 };
-
-const durationEvent = (date1, date2) => dayjs(dayjs(date2).diff(dayjs(date1))).format('DD[D] HH[H] mm[M]');
 
 const isFavoritePoint = (value) => value === true ? 'event__favorite-btn--active' : '';
 
@@ -36,7 +35,7 @@ const createPoint = (point) => {
         &mdash;
         <time class="event__end-time" datetime="${dayjs(dateEnd).format('YY-MM-DTH:mm')}">${dayjs(dateEnd).format('H:mm')}</time>
       </p>
-      <p class="event__duration">${durationEvent(dateStart, dateEnd)}</p>
+      <p class="event__duration">${getDurationEvent(dateStart, dateEnd)}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${price}</span>

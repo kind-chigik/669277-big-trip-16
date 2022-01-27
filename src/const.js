@@ -1,3 +1,5 @@
+export const reForPrice = /[^0-9]/;
+
 export const typesSort = {
   BY_DAY: 'sort-day',
   BY_TIME: 'sort-time',
@@ -20,4 +22,9 @@ export const filterType = {
   EVERYTHING: 'Everything',
   FUTURE: 'Future',
   PAST: 'Past',
+};
+
+export const itemsMenu = {
+  TABLE: 'Table',
+  STATS: 'Stats',
 };

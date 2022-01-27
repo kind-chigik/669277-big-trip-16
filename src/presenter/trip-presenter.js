@@ -6,7 +6,6 @@ import {renderPosition, renderElement} from '../render.js';
 import {compareElementsByPrice, compareElementsByTime, compareElementsByDate, filter, removeInstance} from '../helper.js';
 import {typesSort, typesUpdate, userAction} from '../const.js';
 import dayjs from 'dayjs';
-import {generateZeroPoint} from '../mock/point.js';
 
 class TripPresenter {
   #placeForRender = null;
@@ -26,14 +25,14 @@ class TripPresenter {
     this.#filterModel = filterModel;
     this.#buttonAddNew = buttonAddNew;
     this.#currentSortType = typesSort.BY_DAY;
+  }
+
+  init = (zeroPoint) => {
+    this.#zeroPoint = zeroPoint;
+    this.#renderPoints();
 
     this.#pointsModel.addObserver(this.#modelEvent);
     this.#filterModel.addObserver(this.#modelEvent);
-    this.#buttonAddNew.addEventListener('click', this.#addPoint);
-  }
-
-  init = () => {
-    this.#renderPoints();
   }
 
   get points() {
@@ -54,12 +53,6 @@ class TripPresenter {
     }
 
     return filteredPoints;
-  }
-
-  #addPoint = () => {
-    this.#clearPointsList();
-    this.#zeroPoint = generateZeroPoint();
-    this.#renderPoints();
   }
 
   #changeMode = () => {
@@ -126,7 +119,7 @@ class TripPresenter {
       this.#zeroPoint = null;
     } else {
       const pointPresenter = new PointPresentor(elementPlace, this.#viewEvent, this.#changeMode);
-      pointPresenter.init(point);
+      pointPresenter.init(point, null, this.#pointsModel.points);
       this.#pointsPresenters.set(point.id, pointPresenter);
     }
   }
@@ -166,6 +159,15 @@ class TripPresenter {
       this.#currentSortType = typesSort.BY_DAY;
     }
     removeInstance(this.#sortInstance);
+  }
+
+  destroy = () => {
+    this.#clearPointsList({resetSort: true, resetFilter: true});
+    removeInstance(this.#contentInstance);
+
+    this.#pointsModel.removeObserver(this.#modelEvent);
+    this.#filterModel.removeObserver(this.#modelEvent);
+
   }
 }
 

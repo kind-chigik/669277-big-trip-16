@@ -2,6 +2,7 @@ import SmartView from './smart-view.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import {createTextId} from '../helper.js';
+import {reForPrice} from '../const.js';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
@@ -56,12 +57,12 @@ const createCities = (destinationForCities) => {
   return fragment.join('');
 };
 
-const createFormPointEdit = (pointWithConditions) => {
+const createFormPointEdit = (pointWithConditions, originCity) => {
   const {type, city, dateStart, dateEnd, price, offers, destination, destinationForCities, randomOffers} = pointWithConditions;
   const {description, photos} = destination;
   const isPointHasDescription = description === '' && photos.length === 0 ? 'visually-hidden' : '';
   const isPointHasOffers = offers.length === 0 ? 'visually-hidden' : '';
-  const isPointNew = city === '';
+  const isPointNew = originCity === '';
   const isSaveDisabled = (city === '') || (dateStart === '') || (dateEnd === '') ? 'disabled' : '';
 
   return `<li class="trip-events__item">
@@ -150,7 +151,7 @@ class FormPointEditView extends SmartView {
   }
 
   get template() {
-    return createFormPointEdit(this._condiotions);
+    return createFormPointEdit(this._condiotions, this.#point.city);
   }
 
   setListenerSubmit = (callback) => {
@@ -224,6 +225,14 @@ class FormPointEditView extends SmartView {
   #changePricePoint = (evt) => {
     evt.preventDefault();
     if (evt.target.value !== this.#point.price) {
+      const inputPrice = evt.target;
+      const valuePrice = evt.target.value;
+      inputPrice.setCustomValidity('');
+      if (reForPrice.test(valuePrice)) {
+        inputPrice.setCustomValidity('Можно вводить только цифры');
+      }
+      inputPrice.reportValidity();
+
       this.updateData({isPricePointChanged: true, price: evt.target.value}, true);
     } else {
       this.updateData({isPricePointChanged: false, price: evt.target.value});
@@ -305,8 +314,8 @@ class FormPointEditView extends SmartView {
     this.#setDatepicker();
   }
 
-  reset = (points) => {
-    this.updateData(FormPointEditView.parsePointToConditions(points));
+  reset = (point) => {
+    this.updateData(FormPointEditView.parsePointToConditions(point));
   }
 
   removeElement = () => {

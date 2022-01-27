@@ -3,10 +3,10 @@ import AbstractView from './abstract-view.js';
 const getTemplateFilters = (filters, currentFilterType) => {
   const fragment = [];
   filters.forEach((filter) => {
-    const {type, name} = filter;
+    const {type} = filter;
     fragment.push(`<div class="trip-filters__filter">
-    <input id="filter-${name.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${name.toLowerCase()}" ${type === currentFilterType ? 'checked' : ''}>
-    <label class="trip-filters__filter-label" for="filter-${name.toLowerCase()}">${name}</label>
+    <input id="filter-${type.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type.toLowerCase()}" ${type === currentFilterType ? 'checked' : ''}>
+    <label class="trip-filters__filter-label" for="filter-${type.toLowerCase()}">${type}</label>
   </div>`);
   });
 
