@@ -1,21 +1,19 @@
 import SmartView from './smart-view.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import {createTextId} from '../helper.js';
 import {reForPrice} from '../const.js';
 
 const createOffers = (offersPoint) => {
   const fragment = [];
   offersPoint.forEach((offer) => {
-    const {title, cost, checked} = offer;
-    const inputId = createTextId(title);
+    const {title, price, id} = offer;
     fragment.push(`<div class="event__available-offers">
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${inputId}-1" type="checkbox" name="event-offer-${inputId}" value="${title}" ${checked === true ? 'checked' : ''}>
-      <label class="event__offer-label" for="event-offer-${inputId}-1">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" value="${title}" ${offer.checked === true ? 'checked' : ''}>
+      <label class="event__offer-label" for="event-offer-${id}-1">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
-        <span class="event__offer-price">${cost}</span>
+        <span class="event__offer-price">${price}</span>
       </label>
     </div>`);
   });
@@ -27,20 +25,20 @@ const createPhotos = (photosPoint) => {
   if (photosPoint) {
     const fragment = [];
     photosPoint.forEach((photo) => {
-      fragment.push(`<img class="event__photo" src="${photo}" alt="Event photo">`);
+      fragment.push(`<img class="event__photo" src="${photo.src}" alt="Event photo">`);
     });
 
     return fragment.join('');
   }
 };
 
-const createTypesPoints = (typesPoints, checkedType) => {
+const createTypesPoints = (offersPoints, checkedType) => {
   const fragment = [];
-  typesPoints.forEach((element) => {
+  offersPoints.forEach((element) => {
     const {type} = element;
     fragment.push(`<div class="event__type-item">
-    <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}" ${type === checkedType ? 'checked' : ''}>
-    <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
+    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === checkedType ? 'checked' : ''}>
+    <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
   </div>
     `);
   });
@@ -48,17 +46,17 @@ const createTypesPoints = (typesPoints, checkedType) => {
   return fragment.join('');
 };
 
-const createCities = (destinationForCities) => {
+const createCities = (destinationsPoints) => {
   const fragment = [];
-  destinationForCities.forEach((element) => {
-    fragment.push(`<option value="${element.city}"></option>`);
+  destinationsPoints.forEach((element) => {
+    fragment.push(`<option value="${element.name}"></option>`);
   });
 
   return fragment.join('');
 };
 
-const createFormPointEdit = (pointWithConditions, originCity) => {
-  const {type, city, dateStart, dateEnd, price, offers, destination, destinationForCities, randomOffers} = pointWithConditions;
+const createFormPointEdit = (pointWithConditions, originCity, offersPoints, destinationsPoints) => {
+  const {type, city, dateStart, dateEnd, price, offers, destination} = pointWithConditions;
   const {description, photos} = destination;
   const isPointHasDescription = description === '' && photos.length === 0 ? 'visually-hidden' : '';
   const isPointHasOffers = offers.length === 0 ? 'visually-hidden' : '';
@@ -78,7 +76,7 @@ const createFormPointEdit = (pointWithConditions, originCity) => {
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-            ${createTypesPoints(randomOffers, type)}
+            ${createTypesPoints(offersPoints, type)}
           </fieldset>
         </div>
       </div>
@@ -89,7 +87,7 @@ const createFormPointEdit = (pointWithConditions, originCity) => {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city ? city : ''}" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${createCities(destinationForCities)}
+          ${createCities(destinationsPoints)}
         </datalist>
       </div>
 
@@ -138,12 +136,16 @@ const createFormPointEdit = (pointWithConditions, originCity) => {
 
 class FormPointEditView extends SmartView {
   #point = null;
+  #destinations = null;
+  #offers = null;
   #datepickerDateStart = null;
   #datepickerDateEnd = null;
 
-  constructor(point) {
+  constructor(point, destinations, offers) {
     super();
     this.#point = point;
+    this.#destinations = destinations;
+    this.#offers = offers;
     this._condiotions = FormPointEditView.parsePointToConditions(point);
 
     this.#setInnerHandlers();
@@ -151,7 +153,7 @@ class FormPointEditView extends SmartView {
   }
 
   get template() {
-    return createFormPointEdit(this._condiotions, this.#point.city);
+    return createFormPointEdit(this._condiotions, this.#point.city, this.#offers, this.#destinations);
   }
 
   setListenerSubmit = (callback) => {
@@ -184,7 +186,7 @@ class FormPointEditView extends SmartView {
 
   #changeTypePoint = (evt) => {
     if (evt.target.closest('.event__type-label')) {
-      this.#point.randomOffers.forEach((element) => {
+      this.#offers.forEach((element) => {
         if (element.type === evt.target.textContent) {
           const typePoint = evt.target.textContent;
           if (typePoint !== this.#point.type) {
@@ -198,12 +200,12 @@ class FormPointEditView extends SmartView {
   }
 
   #changeDestinationPoint = (evt) => {
-    this.#point.destinationForCities.forEach((element) => {
-      if (evt.target.value === element.city) {
+    this.#destinations.forEach((element) => {
+      if (evt.target.value === element.name) {
         const cityPoint = evt.target.value;
         const photosAndDescription = {};
         photosAndDescription.description = element.description;
-        photosAndDescription.photos = element.photos;
+        photosAndDescription.photos = element.pictures;
 
         if (cityPoint !== this.#point.city) {
           this.updateData({isDestinationPointChanged: true, city: cityPoint, destination: photosAndDescription});
@@ -288,11 +290,10 @@ class FormPointEditView extends SmartView {
   static parseConditionsToPoint = (conditions) => {
     const point = {...conditions};
 
-    delete conditions.isTypePointChanged;
-    delete conditions.isDestinationPointChanged;
-    delete conditions.isDatePointChanged;
-    delete conditions.isPricePointChanged;
-
+    delete point.isTypePointChanged;
+    delete point.isDestinationPointChanged;
+    delete point.isDatePointChanged;
+    delete point.isPricePointChanged;
     return point;
   }
 
