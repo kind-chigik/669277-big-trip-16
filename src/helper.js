@@ -1,20 +1,6 @@
-import {filterType} from './const.js';
+import {filterType, KEY_ESCAPE, KEY_ESC, TYPES_POINT} from './const.js';
 import dayjs from 'dayjs';
-
-const KEY_ESCAPE = 'Escape';
-const KEY_ESC = 'Esc';
-const idForOffers = {
-  LUGGAGE: 'Add luggage',
-  COMFORT: 'Switch to comfort class',
-  MEAL: 'Add meal',
-  SEATS: 'Choose seats',
-  TRAIN: 'Travel by train',
-  UBER: 'Order Uber',
-  CAR: 'Rent a car',
-  BREAKFAST: 'Add breakfast',
-  TEACKETS: 'Book tickets',
-  LUNCH: 'Lunch in city',
-};
+import {nanoid} from 'nanoid';
 
 export const isKeyEsс = (evt) => evt.key === KEY_ESCAPE || evt.key === KEY_ESC;
 
@@ -43,42 +29,6 @@ export const removeInstance = (instance) => {
   instance.removeElement();
 };
 
-export const createTextId = (string) => {
-  let textId = '';
-  switch (string) {
-    case idForOffers.LUGGAGE:
-      textId = 'luggage';
-      return textId;
-    case idForOffers.COMFORT:
-      textId = 'comfort';
-      return textId;
-    case idForOffers.MEAL:
-      textId = 'meal';
-      return textId;
-    case idForOffers.SEATS:
-      textId = 'seats';
-      return textId;
-    case idForOffers.TRAIN:
-      textId = 'train';
-      return textId;
-    case idForOffers.UBER:
-      textId = 'uber';
-      return textId;
-    case idForOffers.CAR:
-      textId = 'car';
-      return textId;
-    case idForOffers.BREAKFAST:
-      textId = 'breakfast';
-      return textId;
-    case idForOffers.TEACKETS:
-      textId = 'teackets';
-      return textId;
-    case idForOffers.LUNCH:
-      textId = 'lunch';
-      return textId;
-  }
-};
-
 export const compareElementsByPrice = (element1, element2) => element2.price - element1.price;
 
 export const compareElementsByTime = (element1, element2) => element2.durationEvent - element1.durationEvent;
@@ -103,3 +53,43 @@ export const filter = (currentFilterType, points) => {
   }
 };
 
+const getRandomNumber = (a = 0, b = 1) => {
+  const lower = Math.ceil(Math.min(a, b));
+  const upper = Math.floor(Math.max(a, b));
+
+  return Math.floor(lower + Math.random() * (upper - lower + 1));
+};
+
+const getRandomElement = (array) => {
+  const randomIndex = getRandomNumber(0, array.length - 1);
+
+  return array[randomIndex];
+};
+
+export const generateZeroPoint = (offersPoint) => {
+  const type = getRandomElement(TYPES_POINT);
+
+  let offers = null;
+  if (offersPoint) {
+    offersPoint.forEach((element) => {
+      if (element.type === type.toLowerCase()) {
+        offers = element.offers;
+      }
+    });
+  }
+
+  return {
+    id: nanoid(),
+    type,
+    city: '',
+    destination: {
+      description: '',
+      photos: '',
+    },
+    dateStart: '',
+    dateEnd: '',
+    price: '',
+    isFavorite: false,
+    offers,
+  };
+};
