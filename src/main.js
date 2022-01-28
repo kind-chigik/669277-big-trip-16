@@ -4,20 +4,13 @@ import StatisticsView from './view/statistics-view.js';
 import TripPresenter from './presenter/trip-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import ApiService from './api-service.js';
-import {generateZeroPoint} from './mock/point.js';
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
-import {itemsMenu} from './const.js';
-import {removeInstance} from './helper.js';
+import {itemsMenu, AUTHORIZATION, END_POINT} from './const.js';
+import {removeInstance, generateZeroPoint} from './helper.js';
 
 let zeroPoint = null;
 let statisticsInstance = null;
-const AUTHORIZATION = 'Basic ki32nf6e25gy6x1d';
-const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
-
-const apiService = new ApiService(END_POINT, AUTHORIZATION);
-
-const pointsModel = new PointsModel(apiService);
 
 const navigation = document.querySelector('.trip-controls__navigation');
 const filters = document.querySelector('.trip-controls__filters');
@@ -25,6 +18,8 @@ const tripEvents = document.querySelector('.trip-events');
 const buttonAddNew = document.querySelector('.trip-main__event-add-btn');
 const main = document.querySelector('.trip-events');
 
+const apiService = new ApiService(END_POINT, AUTHORIZATION);
+const pointsModel = new PointsModel(apiService);
 const menuInstance = new MenuView();
 const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter(filters, filterModel);
@@ -50,7 +45,8 @@ const clickMenu = (itemMenu) => {
 };
 
 const addNewPoint = () => {
-  zeroPoint = generateZeroPoint();
+  zeroPoint = generateZeroPoint(pointsModel.offers);
+
   if (statisticsInstance) {
     removeInstance(statisticsInstance);
     filterPresenter.init();

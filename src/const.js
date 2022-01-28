@@ -1,4 +1,12 @@
+export const AUTHORIZATION = 'Basic ki32nf6e25gy6x1d';
+export const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
+
 export const reForPrice = /[^0-9]/;
+
+export const KEY_ESCAPE = 'Escape';
+export const KEY_ESC = 'Esc';
+
+export const TYPES_POINT = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 
 export const typesSort = {
   BY_DAY: 'sort-day',
