@@ -29,7 +29,7 @@ class PointPresentor {
     this.#resetNewPoint = resetNewPoint;
   }
 
-  init = (point, isNewPoint) => {
+  init = (point, isNewPoint, destinations, offers) => {
     this.#point = point;
     this.#isNewPoint = isNewPoint;
 
@@ -37,7 +37,7 @@ class PointPresentor {
     const prevPointEditInstace = this.#pointEditInstace;
 
     this.#pointInstance = new PointView(point);
-    this.#pointEditInstace = new FormPointEditView(point);
+    this.#pointEditInstace = new FormPointEditView(point, destinations, offers);  // В форму редактированию передаются пункты назначения и офферы из модели
 
     this.#pointInstance.setListenerClickEdit(this.#openFormEdit);
     this.#pointInstance.setListenerClickFavorite(this.#changeFavorite);

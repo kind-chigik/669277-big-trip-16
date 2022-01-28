@@ -5,12 +5,12 @@ import {getDurationEvent} from '../helper.js';
 const createOffers = (offersPoint) => {
   const fragment = [];
   offersPoint.forEach((offer) => {
-    const {title, cost, checked} = offer;
-    if (checked === true) {
+    const {title, price} = offer;
+    if (offer.checked === true) {
       fragment.push(`<li class="event__offer">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
-      <span class="event__offer-price">${cost}</span>
+      <span class="event__offer-price">${price}</span>
       </li>`);
     }
   });

@@ -3,19 +3,14 @@ import MenuView from './view/menu-view.js';
 import StatisticsView from './view/statistics-view.js';
 import TripPresenter from './presenter/trip-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
-import {generatePoint, generateZeroPoint} from './mock/point.js';
+import ApiService from './api-service.js';
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
-import {itemsMenu} from './const.js';
-import {removeInstance} from './helper.js';
+import {itemsMenu, AUTHORIZATION, END_POINT} from './const.js';
+import {removeInstance, generateZeroPoint} from './helper.js';
 
-const POINT_COUNT = 3;
 let zeroPoint = null;
-
-const points = Array.from({length: POINT_COUNT}, generatePoint);
-const pointsModel = new PointsModel();
-
-pointsModel.points = points;
+let statisticsInstance = null;
 
 const navigation = document.querySelector('.trip-controls__navigation');
 const filters = document.querySelector('.trip-controls__filters');
@@ -23,15 +18,11 @@ const tripEvents = document.querySelector('.trip-events');
 const buttonAddNew = document.querySelector('.trip-main__event-add-btn');
 const main = document.querySelector('.trip-events');
 
+const apiService = new ApiService(END_POINT, AUTHORIZATION);
+const pointsModel = new PointsModel(apiService);
 const menuInstance = new MenuView();
-renderElement(navigation, menuInstance, renderPosition.BEFOREEND);
-
 const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter(filters, filterModel);
-filterPresenter.init();
-
-let statisticsInstance = null;
-
 const tripPresenter = new TripPresenter(tripEvents, pointsModel, buttonAddNew, filterModel);
 tripPresenter.init();
 
@@ -53,10 +44,9 @@ const clickMenu = (itemMenu) => {
   }
 };
 
-menuInstance.setListenerClickMenu(clickMenu);
-
 const addNewPoint = () => {
-  zeroPoint = generateZeroPoint();
+  zeroPoint = generateZeroPoint(pointsModel.offers);
+
   if (statisticsInstance) {
     removeInstance(statisticsInstance);
     filterPresenter.init();
@@ -71,3 +61,9 @@ const addNewPoint = () => {
 };
 
 buttonAddNew.addEventListener('click', addNewPoint);
+
+pointsModel.init().finally(() => {
+  renderElement(navigation, menuInstance, renderPosition.BEFOREEND);
+  menuInstance.setListenerClickMenu(clickMenu);
+  filterPresenter.init();
+});
