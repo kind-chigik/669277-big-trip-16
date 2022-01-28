@@ -1,5 +1,5 @@
 import AbstractObservable from '../abstract-observable.js';
-import {typesUpdate} from '../const.js';
+import {TypeUpdate} from '../const.js';
 
 class PointsModel extends AbstractObservable {
   #points = [];
@@ -38,7 +38,7 @@ class PointsModel extends AbstractObservable {
       this.#offers = [];
     }
 
-    this._notify(typesUpdate.INIT);
+    this._notify(TypeUpdate.INIT);
   }
 
   updatePoint = async (typeUpdate, update) => {
@@ -63,25 +63,36 @@ class PointsModel extends AbstractObservable {
     }
   }
 
-  addPoint = (typeUpdate, update) => {
-    this.#points = [update, ...this.#points];
+  addPoint = async (typeUpdate, update) => {
+    try {
+      const response = await this.#apiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
+      this.#points = [newPoint, ...this.#points];
 
-    this._notify(typeUpdate, update);
+      this._notify(typeUpdate, newPoint);
+    } catch(err) {
+      throw new Error('Не получилось добавить точку');
+    }
   }
 
-  deletePoint = (typeUpdate, update) => {
+  deletePoint = async (typeUpdate, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Нельзя удалить несуществующую точку');
     }
 
-    this.#points = [
-      ...this.#points.slice(0, index),
-      ...this.#points.slice(index + 1),
-    ];
+    try {
+      await this.#apiService.deletePoint(update);
+      this.#points = [
+        ...this.#points.slice(0, index),
+        ...this.#points.slice(index + 1),
+      ];
 
-    this._notify(typeUpdate);
+      this._notify(typeUpdate);
+    } catch(err) {
+      throw new Error('Не получилось удалить точку');
+    }
   }
 
   #adaptToClient = (point) => {
