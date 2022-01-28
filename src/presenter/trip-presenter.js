@@ -24,7 +24,7 @@ class TripPresenter {
 
   constructor(placeForRender, pointsModel, buttonAddNew, filterModel) {
     this.#placeForRender = placeForRender;
-    this.#pointsModel = pointsModel;  // Модель точек
+    this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
     this.#buttonAddNew = buttonAddNew;
     this.#currentSortType = typesSort.BY_DAY;
@@ -106,7 +106,7 @@ class TripPresenter {
         this.#clearPointsList({resetSort: true, resetFilter: true});
         this.#renderPoints();
         break;
-      case typesUpdate.INIT:    // запустится только после того, как модель загрузит все данные
+      case typesUpdate.INIT:
         this.#isLoading = false;
         removeInstance(this.#loadingInstance);
         this.#renderPoints();
