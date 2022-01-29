@@ -1,8 +1,7 @@
-import {filterType, KEY_ESCAPE, KEY_ESC, TYPES_POINT} from './const.js';
+import {TypeFilter, KeyEsc, typesPoints} from './const.js';
 import dayjs from 'dayjs';
-import {nanoid} from 'nanoid';
 
-export const isKeyEsс = (evt) => evt.key === KEY_ESCAPE || evt.key === KEY_ESC;
+export const isKeyEsс = (evt) => evt.key === KeyEsc.KEY_ESCAPE || evt.key === KeyEsc.KEY_ESC;
 
 export const getDurationEvent = (date1, date2) => dayjs(dayjs(date2).diff(dayjs(date1))).format('DD[D] HH[H] mm[M]');
 
@@ -37,17 +36,17 @@ export const compareElementsByDate = (element1, element2) => element1.dateStart 
 
 export const filter = (currentFilterType, points) => {
   let filteredPoints = null;
-  if (currentFilterType === filterType.EVERYTHING) {
+  if (currentFilterType === TypeFilter.EVERYTHING) {
     filteredPoints = points;
     return filteredPoints;
   }
 
-  if (currentFilterType === filterType.FUTURE) {
+  if (currentFilterType === TypeFilter.FUTURE) {
     filteredPoints = points.filter((element) => element.dateStart >= dayjs().toDate());
     return filteredPoints;
   }
 
-  if (currentFilterType === filterType.PAST) {
+  if (currentFilterType === TypeFilter.PAST) {
     filteredPoints = points.filter((element) => element.dateEnd <= dayjs().toDate());
     return filteredPoints;
   }
@@ -67,7 +66,7 @@ const getRandomElement = (array) => {
 };
 
 export const generateZeroPoint = (offersPoint) => {
-  const type = getRandomElement(TYPES_POINT);
+  const type = getRandomElement(typesPoints);
 
   let offers = null;
   if (offersPoint) {
@@ -79,7 +78,7 @@ export const generateZeroPoint = (offersPoint) => {
   }
 
   return {
-    id: nanoid(),
+    id: '',
     type,
     city: '',
     destination: {

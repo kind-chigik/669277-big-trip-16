@@ -1,15 +1,15 @@
 import AbstractView from './abstract-view.js';
-import {itemsMenu} from '../const.js';
+import {ItemMenu} from '../const.js';
 
 const createMenu = () => (
   `<nav class="trip-controls__trip-tabs  trip-tabs">
-  <a class="trip-tabs__btn  ${itemsMenu.TABLE.toLowerCase()}" href="#">Table</a>
-  <a class="trip-tabs__btn ${itemsMenu.STATS.toLowerCase()}" href="#">Stats</a>
+  <a class="trip-tabs__btn  ${ItemMenu.TABLE.toLowerCase()}" href="#">Table</a>
+  <a class="trip-tabs__btn ${ItemMenu.STATS.toLowerCase()}" href="#">Stats</a>
   </nav>`
 );
 
 class MenuView extends AbstractView {
-  #currentItemMenu = itemsMenu.TABLE;
+  #currentItemMenu = ItemMenu.TABLE;
 
   get template() {
     return createMenu();

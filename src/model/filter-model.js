@@ -1,8 +1,8 @@
 import AbstractObservable from '../abstract-observable.js';
-import {filterType} from '../const.js';
+import {TypeFilter} from '../const.js';
 
 class FilterModel extends AbstractObservable {
-  #currentFilter = filterType.EVERYTHING;
+  #currentFilter = TypeFilter.EVERYTHING;
 
   get filter() {
     return this.#currentFilter;
@@ -14,7 +14,7 @@ class FilterModel extends AbstractObservable {
   }
 
   resetFilter = () => {
-    this.#currentFilter = filterType.EVERYTHING;
+    this.#currentFilter = TypeFilter.EVERYTHING;
   }
 }
 

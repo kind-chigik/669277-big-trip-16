@@ -1,15 +1,15 @@
 import SmartView from './smart-view.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import {reForPrice} from '../const.js';
+import {RE_FOR_PRICE} from '../const.js';
 
-const createOffers = (offersPoint) => {
+const createOffers = (offersPoint, isDisabled) => {
   const fragment = [];
   offersPoint.forEach((offer) => {
     const {title, price, id} = offer;
     fragment.push(`<div class="event__available-offers">
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" value="${title}" ${offer.checked === true ? 'checked' : ''}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" value="${title}" ${offer.checked === true ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-${id}-1">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
@@ -32,12 +32,12 @@ const createPhotos = (photosPoint) => {
   }
 };
 
-const createTypesPoints = (offersPoints, checkedType) => {
+const createTypesPoints = (offersPoints, checkedType, isDisabled) => {
   const fragment = [];
   offersPoints.forEach((element) => {
     const {type} = element;
     fragment.push(`<div class="event__type-item">
-    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === checkedType ? 'checked' : ''}>
+    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === checkedType ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
     <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
   </div>
     `);
@@ -55,13 +55,29 @@ const createCities = (destinationsPoints) => {
   return fragment.join('');
 };
 
+const getDeleteValue = (isPointNew, isDeleting) => {
+  let value = '';
+  if (isPointNew) {
+    value = 'Cancel';
+    return value;
+  }
+
+  if (isDeleting) {
+    value = 'Deleting';
+  } else {
+    value = 'Delete';
+  }
+  return value;
+};
+
 const createFormPointEdit = (pointWithConditions, originCity, offersPoints, destinationsPoints) => {
-  const {type, city, dateStart, dateEnd, price, offers, destination} = pointWithConditions;
+  const {type, city, dateStart, dateEnd, price, offers, destination, isDisabled, isSaving, isDeleting} = pointWithConditions;
   const {description, photos} = destination;
   const isPointHasDescription = description === '' && photos.length === 0 ? 'visually-hidden' : '';
   const isPointHasOffers = offers.length === 0 ? 'visually-hidden' : '';
   const isPointNew = originCity === '';
-  const isSaveDisabled = (city === '') || (dateStart === '') || (dateEnd === '') ? 'disabled' : '';
+  const isSaveDisabled = (city === '') || (dateStart === '') || (dateEnd === '') ||  (dateEnd < dateStart) || isDisabled ? 'disabled' : '';
+
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -69,14 +85,14 @@ const createFormPointEdit = (pointWithConditions, originCity, offersPoints, dest
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${type ? type.toLowerCase() : ''}.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-            ${createTypesPoints(offersPoints, type)}
+            ${createTypesPoints(offersPoints, type, isDisabled)}
           </fieldset>
         </div>
       </div>
@@ -85,7 +101,7 @@ const createFormPointEdit = (pointWithConditions, originCity, offersPoints, dest
         <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city ? city : ''}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
         <datalist id="destination-list-1">
           ${createCities(destinationsPoints)}
         </datalist>
@@ -93,10 +109,10 @@ const createFormPointEdit = (pointWithConditions, originCity, offersPoints, dest
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStart}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStart}" ${isDisabled ? 'disabled' : ''}>
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEnd}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEnd}" ${isDisabled ? 'disabled' : ''}>
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -104,11 +120,11 @@ const createFormPointEdit = (pointWithConditions, originCity, offersPoints, dest
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" ${isDisabled ? 'disabled' : ''}>
       </div>
 
-      <button class="event__save-btn  btn  btn--blue" type="submit" ${isSaveDisabled}>Save</button>
-      <button class="event__reset-btn" type="reset">${isPointNew ? 'Cancel' : 'Delete'}</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${isSaveDisabled}>${isSaving ? 'Saving' : 'Save'}</button>
+      <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${getDeleteValue(isPointNew, isDeleting)}</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
@@ -116,7 +132,7 @@ const createFormPointEdit = (pointWithConditions, originCity, offersPoints, dest
     <section class="event__details">
     <section class="event__section  event__section--offers ${isPointHasOffers}">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-  ${createOffers(offers)}
+  ${createOffers(offers, isDisabled)}
   </section>
 
       <section class="event__section  event__section--destination ${isPointHasDescription}">
@@ -217,11 +233,29 @@ class FormPointEditView extends SmartView {
   }
 
   #changeOffersPoint = (evt) => {
-    this._condiotions.offers.forEach((element) => {
-      if (evt.target.value === element.title) {
-        element.checked = !element.checked;
-      }
-    });
+    const updatedOffers = [];
+    let updatedOffer = {};
+    if (evt.target.value) {
+      this._condiotions.offers.forEach((element) => {
+        if (evt.target.value === element.title) {
+          updatedOffer = {
+            id: element.id,
+            title: element.title,
+            price: element.price,
+            checked: !element.checked,
+          };
+        } else {
+          updatedOffer = {
+            id: element.id,
+            title: element.title,
+            price: element.price,
+            checked: element.checked,
+          };
+        }
+        updatedOffers.push(updatedOffer);
+      });
+      this.updateData({offers: updatedOffers});
+    }
   }
 
   #changePricePoint = (evt) => {
@@ -230,12 +264,12 @@ class FormPointEditView extends SmartView {
       const inputPrice = evt.target;
       const valuePrice = evt.target.value;
       inputPrice.setCustomValidity('');
-      if (reForPrice.test(valuePrice)) {
+      if (RE_FOR_PRICE.test(valuePrice)) {
         inputPrice.setCustomValidity('Можно вводить только цифры');
       }
       inputPrice.reportValidity();
 
-      this.updateData({isPricePointChanged: true, price: evt.target.value}, true);
+      this.updateData({isPricePointChanged: true, price: valuePrice}, true);
     } else {
       this.updateData({isPricePointChanged: false, price: evt.target.value});
     }
@@ -280,23 +314,6 @@ class FormPointEditView extends SmartView {
     }
   }
 
-  static parsePointToConditions = (point) => ({...point,
-    isTypePointChanged: false,
-    isDestinationPointChanged: false,
-    isDatePointChanged: false,
-    isPricePointChanged: false,
-  })
-
-  static parseConditionsToPoint = (conditions) => {
-    const point = {...conditions};
-
-    delete point.isTypePointChanged;
-    delete point.isDestinationPointChanged;
-    delete point.isDatePointChanged;
-    delete point.isPricePointChanged;
-    return point;
-  }
-
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-wrapper').addEventListener('click', this.#changeTypePoint);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#changeDestinationPoint);
@@ -331,6 +348,30 @@ class FormPointEditView extends SmartView {
       this.#datepickerDateEnd.destroy();
       this.#datepickerDateEnd = null;
     }
+  }
+
+  static parsePointToConditions = (point) => ({...point,
+    isTypePointChanged: false,
+    isDestinationPointChanged: false,
+    isDatePointChanged: false,
+    isPricePointChanged: false,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+  })
+
+  static parseConditionsToPoint = (conditions) => {
+    const point = {...conditions};
+
+    delete point.isTypePointChanged;
+    delete point.isDestinationPointChanged;
+    delete point.isDatePointChanged;
+    delete point.isPricePointChanged;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
   }
 }
 

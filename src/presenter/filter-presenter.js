@@ -1,5 +1,5 @@
 import FilterView from '../view/filters-view.js';
-import {typesUpdate, filterType} from '../const.js';
+import {TypeUpdate, TypeFilter} from '../const.js';
 import {renderPosition, renderElement } from '../render';
 import {removeInstance} from '../helper.js';
 
@@ -34,13 +34,13 @@ class FilterPresenter {
   get filters() {
     return [
       {
-        type: filterType.EVERYTHING,
+        type: TypeFilter.EVERYTHING,
       },
       {
-        type: filterType.FUTURE,
+        type: TypeFilter.FUTURE,
       },
       {
-        type: filterType.PAST,
+        type: TypeFilter.PAST,
       }
     ];
   }
@@ -50,7 +50,7 @@ class FilterPresenter {
       return;
     }
 
-    this.#filterModel.setFilter(typesUpdate.MINOR, currentFilterType);
+    this.#filterModel.setFilter(TypeUpdate.MINOR, currentFilterType);
   }
 
   #modelEvent = () => {
@@ -63,7 +63,7 @@ class FilterPresenter {
 
     this.#filterModel.removeObserver(this.#modelEvent);
 
-    this.#filterModel.setFilter(typesUpdate.MINOR, filterType.EVERYTHING);
+    this.#filterModel.setFilter(TypeUpdate.MINOR, TypeFilter.EVERYTHING);
   }
 }
 

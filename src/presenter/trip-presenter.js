@@ -5,7 +5,7 @@ import LoadingView from '../view/loading-view.js';
 import PointPresentor from '../presenter/point-presenter.js';
 import {renderPosition, renderElement} from '../render.js';
 import {compareElementsByPrice, compareElementsByTime, compareElementsByDate, filter, removeInstance} from '../helper.js';
-import {typesSort, typesUpdate, userAction} from '../const.js';
+import {TypeSort, TypeUpdate, UserAction, ConditionView} from '../const.js';
 import dayjs from 'dayjs';
 
 class TripPresenter {
@@ -27,7 +27,7 @@ class TripPresenter {
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
     this.#buttonAddNew = buttonAddNew;
-    this.#currentSortType = typesSort.BY_DAY;
+    this.#currentSortType = TypeSort.BY_DAY;
   }
 
   init = (zeroPoint) => {
@@ -44,14 +44,14 @@ class TripPresenter {
     const filteredPoints = filter(this.currentFilterType, points);
 
     switch (this.#currentSortType) {
-      case typesSort.BY_PRICE:
+      case TypeSort.BY_PRICE:
         return  filteredPoints.sort(compareElementsByPrice);
-      case typesSort.BY_TIME:
+      case TypeSort.BY_TIME:
         this.#pointsModel.points.forEach((point) => {
           point.durationEvent = dayjs(dayjs(point.dateEnd).diff(dayjs(point.dateStart)));
         });
         return filteredPoints.sort(compareElementsByTime);
-      case typesSort.BY_DAY:
+      case TypeSort.BY_DAY:
         return filteredPoints.sort(compareElementsByDate);
     }
 
@@ -80,33 +80,49 @@ class TripPresenter {
     renderElement(this.#placeForRender, this.#sortInstance, renderPosition.BEFOREEND);
   }
 
-  #viewEvent = (typeAction, typeUpdate, update) => {
+  #viewEvent = async (typeAction, typeUpdate, update) => {
     switch (typeAction) {
-      case userAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(typeUpdate, update);
+      case UserAction.UPDATE_POINT:
+        this.#pointsPresenters.get(update.id).setViewCondition(ConditionView.SAVING);
+        try {
+          await this.#pointsModel.updatePoint(typeUpdate, update);
+        } catch(err) {
+          this.#pointsPresenters.get(update.id).setViewCondition(ConditionView.ABORTING);
+        }
         break;
-      case userAction.ADD_POINT:
-        this.#pointsModel.addPoint(typeUpdate, update);
+      case UserAction.ADD_POINT:
+        this.#pointsPresenters.get(update.id).setViewCondition(ConditionView.SAVING);
+        try {
+          await this.#pointsModel.addPoint(typeUpdate, update);
+        } catch(err) {
+          this.#pointsPresenters.get(update.id).setViewCondition(ConditionView.ABORTING);
+        }
         break;
-      case userAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(typeUpdate, update);
+      case UserAction.DELETE_POINT:
+        this.#pointsPresenters.get(update.id).setViewCondition(ConditionView.DELETING);
+        try {
+          await this.#pointsModel.deletePoint(typeUpdate, update);
+        } catch(err) {
+          this.#pointsPresenters.get(update.id).setViewCondition(ConditionView.ABORTING);
+        }
+        break;
     }
   }
 
   #modelEvent = (typeUpdate, data) => {
     switch (typeUpdate) {
-      case typesUpdate.PATCH:
+      case TypeUpdate.PATCH:
         this.#pointsPresenters.get(data.id).init(data, null, this.#pointsModel.destinations, this.#pointsModel.offers);
         break;
-      case typesUpdate.MINOR:
+      case TypeUpdate.MINOR:
         this.#clearPointsList();
         this.#renderPoints();
         break;
-      case typesUpdate.MAJOR:
+      case TypeUpdate.MAJOR:
         this.#clearPointsList({resetSort: true, resetFilter: true});
         this.#renderPoints();
         break;
-      case typesUpdate.INIT:
+      case TypeUpdate.INIT:
         this.#isLoading = false;
         removeInstance(this.#loadingInstance);
         this.#renderPoints();
@@ -171,7 +187,7 @@ class TripPresenter {
     }
 
     if (resetSort) {
-      this.#currentSortType = typesSort.BY_DAY;
+      this.#currentSortType = TypeSort.BY_DAY;
     }
     removeInstance(this.#sortInstance);
     removeInstance(this.#loadingInstance);
