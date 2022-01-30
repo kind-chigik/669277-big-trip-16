@@ -3,7 +3,7 @@ import SortView from '../view/sort-view.js';
 import ContentView from '../view/content-view.js';
 import LoadingView from '../view/loading-view.js';
 import PointPresentor from '../presenter/point-presenter.js';
-import {renderPosition, renderElement} from '../render.js';
+import {RenderPosition, renderElement} from '../render.js';
 import {compareElementsByPrice, compareElementsByTime, compareElementsByDate, filter, removeInstance} from '../helper.js';
 import {TypeSort, TypeUpdate, UserAction, ConditionView} from '../const.js';
 import dayjs from 'dayjs';
@@ -77,7 +77,7 @@ class TripPresenter {
     this.#sortInstance = new SortView(this.#currentSortType);
     this.#sortInstance.setListenerClickSort(this.#sortPoints);
 
-    renderElement(this.#placeForRender, this.#sortInstance, renderPosition.BEFOREEND);
+    renderElement(this.#placeForRender, this.#sortInstance, RenderPosition.BEFOREEND);
   }
 
   #viewEvent = async (typeAction, typeUpdate, update) => {
@@ -150,28 +150,29 @@ class TripPresenter {
   #renderPoints = () => {
     if (this.#isLoading) {
       this.#buttonAddNew.disabled = true;
-      renderElement(this.#placeForRender, this.#loadingInstance, renderPosition.AFTERBEGIN);
+      renderElement(this.#placeForRender, this.#loadingInstance, RenderPosition.AFTERBEGIN);
       return;
     } else {
       this.#buttonAddNew.disabled = false;
     }
 
-    if (this.points.length === 0) {
+    if (this.points.length === 0 && !this.#zeroPoint) {
       this.#noPointsInstance = new NoPoints(this.currentFilterType);
-      renderElement(this.#placeForRender, this.#noPointsInstance, renderPosition.BEFOREEND);
-    } else {
-      this.#renderSort();
-      renderElement(this.#placeForRender, this.#contentInstance, renderPosition.BEFOREEND);
+      renderElement(this.#placeForRender, this.#noPointsInstance, RenderPosition.BEFOREEND);
+      return;
+    }
 
-      const content = this.#placeForRender.querySelector('.trip-events__list');
+    this.#renderSort();
+    renderElement(this.#placeForRender, this.#contentInstance, RenderPosition.BEFOREEND);
 
-      if (this.#zeroPoint) {
-        this.#renderPoint(content, this.#zeroPoint);
-      }
+    const content = this.#placeForRender.querySelector('.trip-events__list');
 
-      for (const point of this.points) {
-        this.#renderPoint(content, point);
-      }
+    if (this.#zeroPoint) {
+      this.#renderPoint(content, this.#zeroPoint);
+    }
+
+    for (const point of this.points) {
+      this.#renderPoint(content, point);
     }
   }
 
@@ -199,7 +200,6 @@ class TripPresenter {
 
     this.#pointsModel.removeObserver(this.#modelEvent);
     this.#filterModel.removeObserver(this.#modelEvent);
-
   }
 }
 

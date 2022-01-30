@@ -1,6 +1,6 @@
 import AbstractView from './view/abstract-view.js';
 
-const renderPosition = {
+const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
@@ -12,16 +12,16 @@ const renderElement = (container, element, place) => {
   const child = element instanceof AbstractView ? element.element : element;
 
   switch (place) {
-    case renderPosition.BEFOREBEGIN:
+    case RenderPosition.BEFOREBEGIN:
       parent.before(child);
       break;
-    case renderPosition.AFTERBEGIN:
+    case RenderPosition.AFTERBEGIN:
       parent.prepend(child);
       break;
-    case renderPosition.BEFOREEND:
+    case RenderPosition.BEFOREEND:
       parent.append(child);
       break;
-    case renderPosition.AFTEREND:
+    case RenderPosition.AFTEREND:
       parent.after(child);
       break;
   }
@@ -34,4 +34,4 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export {renderPosition, renderElement, createElement};
+export {RenderPosition, renderElement, createElement};
