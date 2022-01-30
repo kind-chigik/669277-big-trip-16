@@ -172,34 +172,6 @@ class FormPointEditView extends SmartView {
     return createFormPointEdit(this._condiotions, this.#point.city, this.#offers, this.#destinations);
   }
 
-  setListenerSubmit = (callback) => {
-    this._callback.submit = callback;
-    this.element.querySelector('form').addEventListener('submit', this.#callActionSubmit);
-  }
-
-  setListenerClickClose = (callback) => {
-    this._callback.clickClose = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#callActionClickClose);
-  }
-
-  setListenerDelete = (callback) => {
-    this._callback.delete = callback;
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#callActionDelete);
-  }
-
-  #callActionSubmit = (evt) => {
-    evt.preventDefault();
-    this._callback.submit(FormPointEditView.parseConditionsToPoint(this._condiotions));
-  }
-
-  #callActionClickClose = () => {
-    this._callback.clickClose();
-  }
-
-  #callActionDelete = () => {
-    this._callback.delete(FormPointEditView.parseConditionsToPoint(this._condiotions));
-  }
-
   #changeTypePoint = (evt) => {
     if (evt.target.closest('.event__type-label')) {
       this.#offers.forEach((element) => {
@@ -322,6 +294,34 @@ class FormPointEditView extends SmartView {
     if (this._condiotions.offers.length !== 0) {
       this.element.querySelector('.event__available-offers').addEventListener('click', this.#changeOffersPoint);
     }
+  }
+
+  setListenerSubmit = (callback) => {
+    this._callback.submit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#callActionSubmit);
+  }
+
+  #callActionSubmit = (evt) => {
+    evt.preventDefault();
+    this._callback.submit(FormPointEditView.parseConditionsToPoint(this._condiotions));
+  }
+
+  setListenerClickClose = (callback) => {
+    this._callback.clickClose = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#callActionClickClose);
+  }
+
+  #callActionClickClose = () => {
+    this._callback.clickClose();
+  }
+
+  setListenerDelete = (callback) => {
+    this._callback.delete = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#callActionDelete);
+  }
+
+  #callActionDelete = () => {
+    this._callback.delete(FormPointEditView.parseConditionsToPoint(this._condiotions));
   }
 
   restoreHandlers = () => {
