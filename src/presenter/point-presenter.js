@@ -1,6 +1,6 @@
 import PointView from '../view/point-view.js';
 import FormPointEditView from '../view/form-point-edit-view.js';
-import {renderPosition, renderElement} from '../render.js';
+import {RenderPosition, renderElement} from '../render.js';
 import {isKeyEsс, removeInstance} from '../helper.js';
 import {TypeUpdate, UserAction, ConditionView} from '../const.js';
 
@@ -46,7 +46,7 @@ class PointPresentor {
     this.#pointEditInstace.setListenerDelete(this.#deletePoint);
 
     if (prevPointInstance === null || prevPointEditInstace === null) {
-      renderElement(this.#elementPlace, this.#pointInstance, renderPosition.BEFOREEND);
+      renderElement(this.#elementPlace, this.#pointInstance, RenderPosition.BEFOREEND);
 
       if (this.#isNewPoint) {
         this.#replacePointToForm();
