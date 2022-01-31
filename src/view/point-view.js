@@ -3,18 +3,18 @@ import AbstractView from './abstract-view.js';
 import {getDurationEvent} from '../helper.js';
 
 const createOffers = (offersPoint) => {
-  const fragment = [];
+  const fragments = [];
   offersPoint.forEach((offer) => {
     const {title, price} = offer;
     if (offer.checked === true) {
-      fragment.push(`<li class="event__offer">
+      fragments.push(`<li class="event__offer">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>
       </li>`);
     }
   });
-  return fragment.join('');
+  return fragments.join('');
 };
 
 const isFavoritePoint = (value) => value === true ? 'event__favorite-btn--active' : '';
@@ -69,22 +69,22 @@ class PointView extends AbstractView {
     return createPoint(this.#point);
   }
 
-  setListenerClickEdit = (callback) => {
-    this._callback.openFormEdit = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#openFormEdit);
+  setButtonOpenClickHandler = (callback) => {
+    this._callback.buttonOpenClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#buttonOpenClickHandler);
   }
 
-  setListenerClickFavorite = (callback) => {
-    this._callback.changeFavorite = callback;
-    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#changeFavorite);
+  setButtonFavoriteClickHandler = (callback) => {
+    this._callback.buttonFavoriteClick = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#buttonFavoriteClickHandler);
   }
 
-  #changeFavorite = () => {
-    this._callback.changeFavorite();
+  #buttonFavoriteClickHandler = () => {
+    this._callback.buttonFavoriteClick();
   }
 
-  #openFormEdit = () => {
-    this._callback.openFormEdit();
+  #buttonOpenClickHandler = () => {
+    this._callback.buttonOpenClick();
   }
 }
 

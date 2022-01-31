@@ -1,23 +1,9 @@
 import {TypeFilter, KeyEsc, typesPoints} from './const.js';
 import dayjs from 'dayjs';
 
-export const isKeyEsс = (evt) => evt.key === KeyEsc.KEY_ESCAPE || evt.key === KeyEsc.KEY_ESC;
+export const isKeyEsc = (evt) => evt.key === KeyEsc.KEY_ESCAPE || evt.key === KeyEsc.KEY_ESC;
 
 export const getDurationEvent = (date1, date2) => dayjs(dayjs(date2).diff(dayjs(date1))).format('DD[D] HH[H] mm[M]');
-
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
 
 export const removeInstance = (instance) => {
   if (instance === null) {
@@ -59,10 +45,10 @@ const getRandomNumber = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-const getRandomElement = (array) => {
-  const randomIndex = getRandomNumber(0, array.length - 1);
+const getRandomElement = (elements) => {
+  const randomIndex = getRandomNumber(0, elements.length - 1);
 
-  return array[randomIndex];
+  return elements[randomIndex];
 };
 
 export const generateZeroPoint = (offersPoint) => {

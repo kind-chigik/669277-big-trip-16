@@ -15,16 +15,16 @@ class MenuView extends AbstractView {
     return createMenu();
   }
 
-  setListenerClickMenu = (callback) => {
-    this._callback.clickMenu = callback;
-    this.element.addEventListener('click', this.#callActionClickMenu);
+  setMenuClickHandler = (callback) => {
+    this._callback.menuClick = callback;
+    this.element.addEventListener('click', this.#menuClickHandler);
   }
 
-  #callActionClickMenu = (evt) => {
+  #menuClickHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.closest('.trip-tabs__btn')) {
       if (evt.target.textContent !== this.#currentItemMenu) {
-        this._callback.clickMenu(evt.target.textContent);
+        this._callback.menuClick(evt.target.textContent);
       }
     }
   }

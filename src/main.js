@@ -29,7 +29,7 @@ const filterPresenter = new FilterPresenter(filters, filterModel, pointsModel);
 const tripPresenter = new TripPresenter(tripEvents, pointsModel, buttonAddNew, filterModel);
 tripPresenter.init();
 
-const clickMenu = (itemMenu) => {
+const menuClick = (itemMenu) => {
   switch (itemMenu) {
     case ItemMenu.STATS:
       menuInstance.setActiveMenuItem(itemMenu);
@@ -47,7 +47,7 @@ const clickMenu = (itemMenu) => {
   }
 };
 
-const addNewPoint = () => {
+const buttonNewClickHandler = () => {
   zeroPoint = generateZeroPoint(pointsModel.offers);
 
   if (statisticsInstance) {
@@ -64,11 +64,11 @@ const addNewPoint = () => {
   filterPresenter.init();
 };
 
-buttonAddNew.addEventListener('click', addNewPoint);
+buttonAddNew.addEventListener('click', buttonNewClickHandler);
 
 pointsModel.init().finally(() => {
   renderElement(navigation, menuInstance, RenderPosition.BEFOREEND);
-  menuInstance.setListenerClickMenu(clickMenu);
+  menuInstance.setMenuClickHandler(menuClick);
   filterPresenter.init();
   pathPresenter.init();
 });

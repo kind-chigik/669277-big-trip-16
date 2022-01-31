@@ -15,16 +15,16 @@ const isDisabled = (type, isFutureDisabled, isPastDisabled) => {
 };
 
 const getTemplateFilters = (filters, currentFilterType, isFutureDisabled, isPastDisabled) => {
-  const fragment = [];
+  const fragments = [];
   filters.forEach((filter) => {
     const {type} = filter;
-    fragment.push(`<div class="trip-filters__filter">
+    fragments.push(`<div class="trip-filters__filter">
     <input id="filter-${type.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type.toLowerCase()}" ${type === currentFilterType ? 'checked' : ''} ${isDisabled(type, isFutureDisabled, isPastDisabled)}>
     <label class="trip-filters__filter-label" for="filter-${type.toLowerCase()}">${type}</label>
   </div>`);
   });
 
-  return fragment.join('');
+  return fragments.join('');
 };
 
 const createFilters = (filters, currentFilterType, isFutureDisabled, isPastDisabled) => (
@@ -53,15 +53,15 @@ class FilterView extends AbstractView {
     return createFilters(this.#filters, this.#currentFilterType, this.#isFutureDisabled, this.#isPastDisabled);
   }
 
-  setListenerChangeFilter = (callback) => {
-    this._callback.changeFilter = callback;
-    this.element.addEventListener('click', this.#callActionChangeFilter);
+  setFilterClickHandler = (callback) => {
+    this._callback.filterClick = callback;
+    this.element.addEventListener('click', this.#filterClickHandler);
   }
 
-  #callActionChangeFilter = (evt) => {
+  #filterClickHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.closest('.trip-filters__filter-label')) {
-      this._callback.changeFilter(evt.target.textContent);
+      this._callback.filterClick(evt.target.textContent);
     }
   }
 }

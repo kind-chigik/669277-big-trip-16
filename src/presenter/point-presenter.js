@@ -1,7 +1,7 @@
 import PointView from '../view/point-view.js';
 import FormPointEditView from '../view/form-point-edit-view.js';
 import {RenderPosition, renderElement} from '../render.js';
-import {isKeyEsс, removeInstance} from '../helper.js';
+import {isKeyEsc, removeInstance} from '../helper.js';
 import {TypeUpdate, UserAction, ConditionView} from '../const.js';
 
 const Mode = {
@@ -9,7 +9,7 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
-class PointPresentor {
+class PointPresenter {
   #elementPlace = null;
   #buttonAddNew = null;
   #pointInstance = null;
@@ -39,11 +39,11 @@ class PointPresentor {
     this.#pointInstance = new PointView(point);
     this.#pointEditInstace = new FormPointEditView(point, destinations, offers);
 
-    this.#pointInstance.setListenerClickEdit(this.#openFormEdit);
-    this.#pointInstance.setListenerClickFavorite(this.#changeFavorite);
-    this.#pointEditInstace.setListenerClickClose(this.#closeFormEdit);
-    this.#pointEditInstace.setListenerSubmit(this.#savePoint);
-    this.#pointEditInstace.setListenerDelete(this.#deletePoint);
+    this.#pointInstance.setButtonOpenClickHandler(this.#handleButtonOpenClick);
+    this.#pointInstance.setButtonFavoriteClickHandler(this.#handleButtonFavoriteClick);
+    this.#pointEditInstace.setButtonCloseClickHandler(this.#handleButtonCloseClick);
+    this.#pointEditInstace.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointEditInstace.setButtomDeleteClickHandler(this.#handleButtomDeleteClick);
 
     if (prevPointInstance === null || prevPointEditInstace === null) {
       renderElement(this.#elementPlace, this.#pointInstance, RenderPosition.BEFOREEND);
@@ -138,7 +138,7 @@ class PointPresentor {
   }
 
   #onEscKeyDown = (evt) => {
-    if (isKeyEsс(evt)) {
+    if (isKeyEsc(evt)) {
       evt.preventDefault();
       if (this.#isNewPoint) {
         this.destroy();
@@ -153,11 +153,11 @@ class PointPresentor {
     }
   }
 
-  #openFormEdit = () => {
+  #handleButtonOpenClick = () => {
     this.#replacePointToForm();
   }
 
-  #closeFormEdit = () => {
+  #handleButtonCloseClick = () => {
     if (this.#isNewPoint) {
       this.destroy();
       this.#resetNewPoint();
@@ -170,7 +170,7 @@ class PointPresentor {
     }
   }
 
-  #savePoint = (update) => {
+  #handleFormSubmit = (update) => {
     if (this.#isNewPoint) {
       this.#updatePoint(UserAction.ADD_POINT, TypeUpdate.MAJOR, update);
       this.#isNewPoint = false;
@@ -181,12 +181,14 @@ class PointPresentor {
 
     if ((String(this.#point.dateStart) !== String(update.dateStart)) || (String(this.#point.dateEnd) !== String(update.dateEnd))) {
       this.#updatePoint(UserAction.UPDATE_POINT, TypeUpdate.MINOR, update);
+      document.removeEventListener('keydown', this.#onEscKeyDown);
     } else {
       this.#updatePoint(UserAction.UPDATE_POINT, TypeUpdate.PATCH, update);
+      document.removeEventListener('keydown', this.#onEscKeyDown);
     }
   };
 
-  #deletePoint = (point) => {
+  #handleButtomDeleteClick = (point) => {
     if (this.#isNewPoint) {
       this.destroy();
       this.#resetNewPoint();
@@ -196,9 +198,9 @@ class PointPresentor {
     }
   }
 
-  #changeFavorite = () => {
+  #handleButtonFavoriteClick = () => {
     this.#updatePoint(UserAction.UPDATE_POINT, TypeUpdate.PATCH, {...this.#point, isFavorite: !this.#point.isFavorite});
   }
 }
 
-export {PointPresentor as default};
+export {PointPresenter as default};

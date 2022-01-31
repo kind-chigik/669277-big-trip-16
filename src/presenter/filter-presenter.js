@@ -26,7 +26,7 @@ class FilterPresenter {
     this.#isPastDisabled = this.#pointsModel.points.filter((point) => point.dateEnd < dayjs()).length === 0;
 
     this.#filterInstance = new FilterView(filters, this.#filterModel.filter, this.#isFutureDisabled, this.#isPastDisabled);
-    this.#filterInstance.setListenerChangeFilter(this.#changeFilterType);
+    this.#filterInstance.setFilterClickHandler(this.#filterClick);
 
     this.#filterModel.addObserver(this.#modelEvent);
     this.#pointsModel.addObserver(this.#modelEvent);
@@ -54,7 +54,7 @@ class FilterPresenter {
     ];
   }
 
-  #changeFilterType = (currentFilterType) => {
+  #filterClick = (currentFilterType) => {
     if (this.#filterModel.filter === currentFilterType) {
       return;
     }

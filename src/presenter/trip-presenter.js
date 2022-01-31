@@ -1,8 +1,8 @@
-import NoPoints from '../view/no-point-view.js';
+import NoPointsView from '../view/no-point-view.js';
 import SortView from '../view/sort-view.js';
 import ContentView from '../view/content-view.js';
 import LoadingView from '../view/loading-view.js';
-import PointPresentor from '../presenter/point-presenter.js';
+import PointPresenter from '../presenter/point-presenter.js';
 import {RenderPosition, renderElement} from '../render.js';
 import {compareElementsByPrice, compareElementsByTime, compareElementsByDate, filter, removeInstance} from '../helper.js';
 import {TypeSort, TypeUpdate, UserAction, ConditionView} from '../const.js';
@@ -62,7 +62,7 @@ class TripPresenter {
     this.#pointsPresenters.forEach((presenter) => presenter.resetView());
   }
 
-  #sortPoints = (typeSort) => {
+  #sortClick = (typeSort) => {
     if (typeSort === this.#currentSortType) {
       return;
     }
@@ -75,7 +75,7 @@ class TripPresenter {
 
   #renderSort = () => {
     this.#sortInstance = new SortView(this.#currentSortType);
-    this.#sortInstance.setListenerClickSort(this.#sortPoints);
+    this.#sortInstance.setSortClickHandler(this.#sortClick);
 
     renderElement(this.#placeForRender, this.#sortInstance, RenderPosition.BEFOREEND);
   }
@@ -136,12 +136,12 @@ class TripPresenter {
 
   #renderPoint = (elementPlace, point) => {
     if (this.#zeroPoint) {
-      const pointPresenter = new PointPresentor(elementPlace, this.#viewEvent, this.#changeMode, this.#resetNewPoint, this.#buttonAddNew);
+      const pointPresenter = new PointPresenter(elementPlace, this.#viewEvent, this.#changeMode, this.#resetNewPoint, this.#buttonAddNew);
       pointPresenter.init(point, Boolean(this.#zeroPoint), this.#pointsModel.destinations, this.#pointsModel.offers);
       this.#pointsPresenters.set(point.id, pointPresenter);
       this.#zeroPoint = null;
     } else {
-      const pointPresenter = new PointPresentor(elementPlace, this.#viewEvent, this.#changeMode);
+      const pointPresenter = new PointPresenter(elementPlace, this.#viewEvent, this.#changeMode);
       pointPresenter.init(point, null, this.#pointsModel.destinations, this.#pointsModel.offers);
       this.#pointsPresenters.set(point.id, pointPresenter);
     }
@@ -157,7 +157,7 @@ class TripPresenter {
     }
 
     if (this.points.length === 0 && !this.#zeroPoint) {
-      this.#noPointsInstance = new NoPoints(this.currentFilterType);
+      this.#noPointsInstance = new NoPointsView(this.currentFilterType);
       renderElement(this.#placeForRender, this.#noPointsInstance, RenderPosition.BEFOREEND);
       return;
     }

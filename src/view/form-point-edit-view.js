@@ -4,10 +4,10 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import {RE_FOR_PRICE} from '../const.js';
 
 const createOffers = (offersPoint, isDisabled) => {
-  const fragment = [];
+  const fragments = [];
   offersPoint.forEach((offer) => {
     const {title, price, id} = offer;
-    fragment.push(`<div class="event__available-offers">
+    fragments.push(`<div class="event__available-offers">
     <div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" value="${title}" ${offer.checked === true ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-${id}-1">
@@ -18,7 +18,7 @@ const createOffers = (offersPoint, isDisabled) => {
     </div>`);
   });
 
-  return fragment.join('');
+  return fragments.join('');
 };
 
 const createPhotos = (photosPoint) => {
@@ -172,7 +172,7 @@ class FormPointEditView extends SmartView {
     return createFormPointEdit(this._condiotions, this.#point.city, this.#offers, this.#destinations);
   }
 
-  #changeTypePoint = (evt) => {
+  #typePointClickHandler = (evt) => {
     if (evt.target.closest('.event__type-label')) {
       this.#offers.forEach((element) => {
         if (element.type === evt.target.textContent) {
@@ -187,7 +187,7 @@ class FormPointEditView extends SmartView {
     }
   }
 
-  #changeDestinationPoint = (evt) => {
+  #destinationPointInputHandler = (evt) => {
     this.#destinations.forEach((element) => {
       if (evt.target.value === element.name) {
         const cityPoint = evt.target.value;
@@ -204,7 +204,7 @@ class FormPointEditView extends SmartView {
     });
   }
 
-  #changeOffersPoint = (evt) => {
+  #offersPointClickHandler = (evt) => {
     const updatedOffers = [];
     let updatedOffer = {};
     if (evt.target.value) {
@@ -230,7 +230,7 @@ class FormPointEditView extends SmartView {
     }
   }
 
-  #changePricePoint = (evt) => {
+  #pricePointInputHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.value !== this.#point.price) {
       const inputPrice = evt.target;
@@ -255,7 +255,7 @@ class FormPointEditView extends SmartView {
         enableTime: true,
         enableSeconds: true,
         defaultDate: this._condiotions.dateStart,
-        onChange: this.#changeDateStartPoint,
+        onChange: this.#dateStartPointClickHandler,
       },
     );
     this.#datepickerDateEnd = flatpickr(
@@ -265,12 +265,12 @@ class FormPointEditView extends SmartView {
         enableTime: true,
         enableSeconds: true,
         defaultDate: this._condiotions.dateEnd,
-        onChange: this.#changeDateEndPoint,
+        onChange: this.#dateEndPointClickHandler,
       }
     );
   }
 
-  #changeDateStartPoint = ([userDate]) => {
+  #dateStartPointClickHandler = ([userDate]) => {
     if (String(this.#point.dateStart) !== String(userDate)) {
       this.updateData({isDatePointChanged: true, dateStart: userDate});
     } else {
@@ -278,7 +278,7 @@ class FormPointEditView extends SmartView {
     }
   }
 
-  #changeDateEndPoint = ([userDate]) => {
+  #dateEndPointClickHandler = ([userDate]) => {
     if (String(this.#point.dateEnd) !== String(userDate)) {
       this.updateData({isDatePointChanged: true, dateEnd: userDate});
     } else {
@@ -287,48 +287,48 @@ class FormPointEditView extends SmartView {
   }
 
   #setInnerHandlers = () => {
-    this.element.querySelector('.event__type-wrapper').addEventListener('click', this.#changeTypePoint);
-    this.element.querySelector('.event__input--destination').addEventListener('input', this.#changeDestinationPoint);
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#changePricePoint);
+    this.element.querySelector('.event__type-wrapper').addEventListener('click', this.#typePointClickHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationPointInputHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#pricePointInputHandler);
 
     if (this._condiotions.offers.length !== 0) {
-      this.element.querySelector('.event__available-offers').addEventListener('click', this.#changeOffersPoint);
+      this.element.querySelector('.event__available-offers').addEventListener('click', this.#offersPointClickHandler);
     }
   }
 
-  setListenerSubmit = (callback) => {
-    this._callback.submit = callback;
-    this.element.querySelector('form').addEventListener('submit', this.#callActionSubmit);
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
-  #callActionSubmit = (evt) => {
+  #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.submit(FormPointEditView.parseConditionsToPoint(this._condiotions));
+    this._callback.formSubmit(FormPointEditView.parseConditionsToPoint(this._condiotions));
   }
 
-  setListenerClickClose = (callback) => {
-    this._callback.clickClose = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#callActionClickClose);
+  setButtonCloseClickHandler = (callback) => {
+    this._callback.closeClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#buttonCloseClickHandler);
   }
 
-  #callActionClickClose = () => {
-    this._callback.clickClose();
+  #buttonCloseClickHandler = () => {
+    this._callback.closeClick();
   }
 
-  setListenerDelete = (callback) => {
-    this._callback.delete = callback;
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#callActionDelete);
+  setButtomDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#buttonDeleteClickHandler);
   }
 
-  #callActionDelete = () => {
-    this._callback.delete(FormPointEditView.parseConditionsToPoint(this._condiotions));
+  #buttonDeleteClickHandler = () => {
+    this._callback.deleteClick(FormPointEditView.parseConditionsToPoint(this._condiotions));
   }
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
-    this.setListenerSubmit(this._callback.submit);
-    this.setListenerClickClose(this._callback.clickClose);
-    this.setListenerDelete(this._callback.delete);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setButtonCloseClickHandler(this._callback.closeClick);
+    this.setButtomDeleteClickHandler(this._callback.deleteClick);
     this.#setDatepicker();
   }
 

@@ -70,7 +70,7 @@ class ApiService {
 
     const parsedResponse = await ApiService.parseResponse(response);
 
-    return parsedResponse;  // Вернул новую точку в формате json
+    return parsedResponse;
   }
 
   deletePoint = async (point) => {
@@ -80,18 +80,6 @@ class ApiService {
     });
 
     return response;
-  }
-
-  static parseResponse = (response) => response.json();
-
-  static checkStatus = (response) => {
-    if (!response.ok) {
-      throw new Error(`${response.status}: ${response.statusText}`);
-    }
-  }
-
-  static catchError = (err) => {
-    throw err;
   }
 
   #adaptToServer = (point) => {
@@ -114,6 +102,18 @@ class ApiService {
     delete adaptedPoint.city;
 
     return adaptedPoint;
+  }
+
+  static parseResponse = (response) => response.json();
+
+  static checkStatus = (response) => {
+    if (!response.ok) {
+      throw new Error(`${response.status}: ${response.statusText}`);
+    }
+  }
+
+  static catchError = (err) => {
+    throw err;
   }
 }
 

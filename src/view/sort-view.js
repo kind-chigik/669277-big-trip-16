@@ -40,16 +40,16 @@ class SortView extends AbstractView {
     return createSort(this._currentSortType);
   }
 
-  setListenerClickSort = (callback) => {
-    this._callback.sortPoints = callback;
-    this.element.addEventListener('click', this.#sortPoints);
+  setSortClickHandler = (callback) => {
+    this._callback.sortClick = callback;
+    this.element.addEventListener('click', this.#sortClickHandler);
   }
 
-  #sortPoints = (evt) => {
+  #sortClickHandler = (evt) => {
     if (evt.target.tagName !== 'INPUT') {
       return;
     }
-    this._callback.sortPoints(evt.target.id);
+    this._callback.sortClick(evt.target.id);
   }
 }
 
