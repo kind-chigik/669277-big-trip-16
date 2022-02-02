@@ -13,7 +13,7 @@ const createViewWithoutPoint = (filter) => {
   return `<p class="trip-events__msg">${text}</p>`;
 };
 
-class NoPointsView extends AbstractView {
+class NoPointView extends AbstractView {
   constructor(filter) {
     super();
     this._filterType = filter;
@@ -24,6 +24,6 @@ class NoPointsView extends AbstractView {
   }
 }
 
-export {NoPointsView as default};
+export {NoPointView as default};
 
 

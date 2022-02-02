@@ -126,7 +126,7 @@ class PointPresenter {
 
   #replacePointToForm = () => {
     this.#elementPlace.replaceChild(this.#pointEditInstace.element, this.#pointInstance.element);
-    document.addEventListener('keydown', this.#onEscKeyDown);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#changeMode();
     this.#mode = Mode.EDITING;
   }
@@ -134,21 +134,21 @@ class PointPresenter {
   #replaceFormToPoint = () => {
     this.#elementPlace.replaceChild(this.#pointInstance.element, this.#pointEditInstace.element);
     this.#mode = Mode.DEFAULT;
-    document.removeEventListener('keydown', this.#onEscKeyDown);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  #onEscKeyDown = (evt) => {
+  #escKeyDownHandler = (evt) => {
     if (isKeyEsc(evt)) {
       evt.preventDefault();
       if (this.#isNewPoint) {
         this.destroy();
         this.#resetNewPoint();
         this.#buttonAddNew.disabled = false;
-        document.removeEventListener('keydown', this.#onEscKeyDown);
+        document.removeEventListener('keydown', this.#escKeyDownHandler);
       } else {
         this.#pointEditInstace.reset(this.#point);
         this.#replaceFormToPoint();
-        document.removeEventListener('keydown', this.#onEscKeyDown);
+        document.removeEventListener('keydown', this.#escKeyDownHandler);
       }
     }
   }
@@ -162,11 +162,11 @@ class PointPresenter {
       this.destroy();
       this.#resetNewPoint();
       this.#buttonAddNew.disabled = false;
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     } else {
       this.#pointEditInstace.reset(this.#point);
       this.#replaceFormToPoint();
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   }
 
@@ -175,16 +175,16 @@ class PointPresenter {
       this.#updatePoint(UserAction.ADD_POINT, TypeUpdate.MAJOR, update);
       this.#isNewPoint = false;
       this.#buttonAddNew.disabled = false;
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
       return;
     }
 
     if ((String(this.#point.dateStart) !== String(update.dateStart)) || (String(this.#point.dateEnd) !== String(update.dateEnd))) {
       this.#updatePoint(UserAction.UPDATE_POINT, TypeUpdate.MINOR, update);
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     } else {
       this.#updatePoint(UserAction.UPDATE_POINT, TypeUpdate.PATCH, update);
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
 
@@ -194,7 +194,7 @@ class PointPresenter {
       this.#resetNewPoint();
     } else {
       this.#updatePoint(UserAction.DELETE_POINT, TypeUpdate.MINOR, point);
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   }
 

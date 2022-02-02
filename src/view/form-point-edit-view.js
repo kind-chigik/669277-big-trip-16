@@ -23,36 +23,36 @@ const createOffers = (offersPoint, isDisabled) => {
 
 const createPhotos = (photosPoint) => {
   if (photosPoint) {
-    const fragment = [];
+    const fragments = [];
     photosPoint.forEach((photo) => {
-      fragment.push(`<img class="event__photo" src="${photo.src}" alt="Event photo">`);
+      fragments.push(`<img class="event__photo" src="${photo.src}" alt="Event photo">`);
     });
 
-    return fragment.join('');
+    return fragments.join('');
   }
 };
 
 const createTypesPoints = (offersPoints, checkedType, isDisabled) => {
-  const fragment = [];
+  const fragments = [];
   offersPoints.forEach((element) => {
     const {type} = element;
-    fragment.push(`<div class="event__type-item">
+    fragments.push(`<div class="event__type-item">
     <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === checkedType ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
     <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
   </div>
     `);
   });
 
-  return fragment.join('');
+  return fragments.join('');
 };
 
 const createCities = (destinationsPoints) => {
-  const fragment = [];
+  const fragments = [];
   destinationsPoints.forEach((element) => {
-    fragment.push(`<option value="${element.name}"></option>`);
+    fragments.push(`<option value="${element.name}"></option>`);
   });
 
-  return fragment.join('');
+  return fragments.join('');
 };
 
 const getDeleteValue = (isPointNew, isDeleting) => {

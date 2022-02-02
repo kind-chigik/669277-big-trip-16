@@ -1,4 +1,4 @@
-import NoPointsView from '../view/no-point-view.js';
+import NoPointView from '../view/no-point-view.js';
 import SortView from '../view/sort-view.js';
 import ContentView from '../view/content-view.js';
 import LoadingView from '../view/loading-view.js';
@@ -157,7 +157,7 @@ class TripPresenter {
     }
 
     if (this.points.length === 0 && !this.#zeroPoint) {
-      this.#noPointsInstance = new NoPointsView(this.currentFilterType);
+      this.#noPointsInstance = new NoPointView(this.currentFilterType);
       renderElement(this.#placeForRender, this.#noPointsInstance, RenderPosition.BEFOREEND);
       return;
     }
